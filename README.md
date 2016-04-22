@@ -7,6 +7,8 @@ http://www.freecadweb.org/
 
 The *.stl files are for getting 3D prints of the parts.
 
+Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99  
+(scroll to the bottom for the most recent)
 
 ### Directions:
 
