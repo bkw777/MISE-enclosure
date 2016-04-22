@@ -27,29 +27,29 @@ You could really just use the M3SE version for both, but I like mine with the op
 #### 2 - Aquire the following parts
 
 * **1 40-pin "IDE" male-female extension cable, 4 inch length**  
-It needs to be an extension, with one male and one female connector.  
-The direction the cable exits the connector on the *male* end matters. The cable should go *away* from the key notch in the side of the connector.  
-No extra fold / strain relief clip on the male connector.  
-No special requirements for the female connector.
-
-http://www.cablesonline.com/240pinidedir.html  
-Change “Available Lengths: 4 inches FI-004”
+ It needs to be an extension, with one male and one female connector.  
+ The direction the cable exits the connector on the *male* end matters. The cable should go *away* from the key notch in the side of the connector.  
+ No extra fold / strain relief clip on the male connector.  
+ No special requirements for the female connector.  
+ 
+ http://www.cablesonline.com/240pinidedir.html  
+ Change “Available Lengths: 4 inches FI-004”
 
 * **4 flat-head #8 x 3/4" sheet metal or wood screws**  
-I prefer stainless steel as well but that's just a preference.  
-Self-tapping would be better (less likely to break the screw posts the first time the screws are run in) but those are not common at your local hardware store, and standard sheet metal screws like the examples below are fine.
+ I prefer stainless steel as well but that's just a preference.  
+ Self-tapping would be better (less likely to break the screw posts the first time the screws are run in) but those are not common at your local hardware store, and standard sheet metal screws like the examples below are fine.  
 
-On-Line:  
-https://www.boltdepot.com/Product-Details.aspx?product=2214
+ On-Line:  
+ https://www.boltdepot.com/Product-Details.aspx?product=2214  
 
-Home Depot:  
-http://www.homedepot.com/p/Crown-Bolt-8-x-3-4-in-Phillips-Flat-Head-Sheet-Metal-Screws-5-per-Pack-35271/202706578
+ Home Depot:  
+ http://www.homedepot.com/p/Crown-Bolt-8-x-3-4-in-Phillips-Flat-Head-Sheet-Metal-Screws-5-per-Pack-35271/202706578  
 
-Lowes:  
-http://www.lowes.com/pd_150742-37672-126965_1z0vrdvZ1z0yjldZ1z0yjpkZ1z0zbdkZ1z1291f__?productId=3817895&pl=1
+ Lowes:  
+ http://www.lowes.com/pd_150742-37672-126965_1z0vrdvZ1z0yjldZ1z0yjpkZ1z0zbdkZ1z1291f__?productId=3817895&pl=1
 
 * **4 small rubber feet**  
-http://www.homedepot.com/p/Everbilt-1-2-in-Self-Adhesive-Vinyl-Surface-Bumpers-16-per-Pack-49967/203661150
+ http://www.homedepot.com/p/Everbilt-1-2-in-Self-Adhesive-Vinyl-Surface-Bumpers-16-per-Pack-49967/203661150
 
 #### 3 - Assembly
 Unplug the cf reader from the MISE.  
