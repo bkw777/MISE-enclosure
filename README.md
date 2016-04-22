@@ -11,8 +11,15 @@ The *.stl files are for getting 3D prints of the parts.
 ### Directions:
 
 #### 1 - Have a 3D printing service print the *.stl files:
-MISE: MISE_top_cover.stl MISE_cf_retainer.stl MISE_base_plate.stl<br>
-M3SE: M3SE_top_cover.stl MISE_cf_retainer.stl MISE_base_plate.stl
+**MISE**:  
+ MISE_top_cover.stl  
+ MISE_cf_retainer.stl  
+ MISE_base_plate.stl  
+ 
+**M3SE**:  
+ M3SE_top_cover.stl  
+ MISE_cf_retainer.stl  
+ MISE_base_plate.stl  
 
 MISE and M3SE both use the same cf_retainer and base_plate. The only difference is M3SE has a wider ribbon cable opening.<br>
 You could really just use the M3SE version for both, but I like mine with the opening only exactly as big as the ribbon cable, so I provide both versions here.
