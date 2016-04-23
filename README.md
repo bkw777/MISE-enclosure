@@ -115,6 +115,32 @@ It's the only way to cleanly dig out the little slots for the cf retainer. You w
 
 Also pay attention to the underside of the little tabs that stick out of the front wall, between the joystick port and the cf card port. Some rafting will likely be stuck under there and it will interfere with the cf retainer which needs to snap into that spot. Scrape all along that edge actually, not just the two tabs that stick out. There is a slight overhang all along the joystick port, and you can't directly see if anything is in there to interfere with the cf retainer.
 
-These files are licenced under the GPL.
-http://www.gnu.org/licenses/gpl-3.0.en.html
+---
+
+## Working with the source FCStd files
+
+FreeCAD: http://www.freecadweb.org/
+
+Both the MISE and M3SE stl files for the top_cover are exported from the same MISE_top_cover.FCStd file.  
+  
+The file is basically for the MISE, with the M3SE changes added as the last 2 Sketches and Pockets at the very end, where it is simple and safe to delete them to switch from M3SE to MISE. As-shipped, the file is really for M3SE, and to get a MISE, you have to delete the last 4 steps from the bottom of the tree. This is necessitated by the way FreeCAD (and most 3d solid modelling cad software) works, where you can't just add or remove features anywhere in the file. About the only thing you can do easily without breaking the drawing, is to delete the very last step, and the next-last, etc working backwards.  
+  
+To get a M3SE:  
+- Open MISE_top_cover.FCStd  
+- Double-click anywhere on the part in the drawing until the entire part turns green
+- File->Export->foo_m3se.stl  
+  
+To get a MISE:
+- Open MISE_top_cover.FCStd  
+- Delete the last Pocket
+- Delete the last Sketch
+- Delete the last Pocket
+- Delete the last Sketch
+- Double-click anywhere on the part in the drawing until the entire part turns green.
+- File->Export->foo_mise.stl
+
+## Author / License
+
+These files are licenced under the GPL.  
+http://www.gnu.org/licenses/gpl-3.0.en.html  
 Brian K. White - bw.aljex@gmail.com - 20160423
