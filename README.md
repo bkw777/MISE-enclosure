@@ -114,3 +114,6 @@ Example: http://www.homedepot.com/p/Husky-Precision-Pick-and-Probe-Set-4-Piece-6
 It's the only way to cleanly dig out the little slots for the cf retainer. You want to poke the probe points right up into all 4 corners of those slots and scrape all 5 interior surfaces to get a good clean rectangular shape inside, so the matching tab fits in.
 
 Also pay attention to the underside of the little tabs that stick out of the front wall, between the joystick port and the cf card port. Some rafting will likely be stuck under there and it will interfere with the cf retainer which needs to snap into that spot. Scrape all along that edge actually, not just the two tabs that stick out. There is a slight overhang all along the joystick port, and you can't directly see if anything is in there to interfere with the cf retainer.
+
+These files are licenced under the GPL.
+http://www.gnu.org/licenses/gpl-3.0.en.html
