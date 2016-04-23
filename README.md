@@ -117,3 +117,4 @@ Also pay attention to the underside of the little tabs that stick out of the fro
 
 These files are licenced under the GPL.
 http://www.gnu.org/licenses/gpl-3.0.en.html
+Brian K. White - bw.aljex@gmail.com - 20160423
