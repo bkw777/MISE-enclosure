@@ -7,7 +7,7 @@
 //  >  "Short edge" holes centered 3815 mils apart.
 //  >  "Long edge" holes centered 4770 mils apart.
 //  >  Thus the PCB is 4315x5270 mils.
-px = 133.858; // pcb x len 
+px = 133.858; // pcb x len
 py = 109.601; // pcb y len
 mi = 6.35;    // mounting holes inset from pcb edges
 
@@ -28,9 +28,9 @@ nic_zt = 26.67;   // pcb Z top to nic Z top - NIC conector is the tallest top-si
 joy_h = 12.7;     // joystick height
 joy_w = 22.86;    // joystick width
 joy_xc = -29.337; // pcb center to js center
-                  // joystick bottom = pcb top    
+                  // joystick bottom = pcb top
 joy_f = 5.1;      // pcb front edge to joystick front
-                 
+
 cf_h = 9.906;    // cf height
 cf_w = 43.18;    // cf width
                  // cf top = inside top surface = iw_h
@@ -42,7 +42,7 @@ bus_h = 6.35;   // bus cable height
 bus_yc = -5.33; // pcb center to bus cable center
                 // bus cable z bottom = ew_z bottom
 
-pz = 1.6;      // pcb thickness
+pz = 1.8;      // pcb thickness
 bch = 2.54;    // bottom-side components height - height of tallest bottom-side component (screw heads for heat sinks and connectors) from pcb bottom - inner/upper surface of base_plate rests here
 tch = nic_zt;  // top-side components height - height of tallest top-side component (ethernet port) above pcb top - inner/lower surface of top wall rests here
 assert(tch>=nic_zt,"tch must be >= nic_zt");
@@ -82,7 +82,7 @@ cft_d = 27.4; // cf tray inside depth
 cft_f2w = 5.842;  // cf tray inside front to inside front wall
 //cft_f2w = 0;
                   // cf tray X center = cf opening X center = js_xc
-cft_wt = 1.6;     // cf tray wall thickness
+cft_wt = 2.4;     // cf tray wall thickness
 cft_wh = 2.54;    // cf tray wall height
 
 // interior walls
@@ -94,11 +94,13 @@ assert(iw_h>=tch,"iw_h must be >= tch");
 iw_z = wt + bch + pz + iw_h; // total interior wall height
 
 // exterior walls
-ew_x = wt + iw_x + wt;
-ew_y = wt + iw_y + wt;
-ew_z = iw_z + wt;
+ew_x = wt + iw_x + wt;  // total exterior X width
+ew_y = wt + iw_y + wt;  // total exterior Y depth
+ew_z = iw_z + wt;       // total exterior Z height
 
-cr=6; // vertical corners inside radius
+// wall corners radius, 0 to 13
+// 0 = square corners, 0.001 = inside square, outside round, >0 = round corners, >13 = invalid, hits pcb corners
+cr = 6; // vertical corners inside radius
 
 oc = 0.1;  // overcut - extend subtraction shapes past the edges of the shapes they cut from, to avoid making zero-thickness features
 twt = 1.6; // tunnel wall thickness
@@ -111,6 +113,10 @@ cfb2z = 14.48;
 cfb2xloc = 5.14;
 cfb2yloc = 2.54;
 
+// smoother curves (less vibration while printing)
+$fa = 0.5; // facet angle
+$fs = 0.4; // facet size
+
 
 ///////////////////////////////////////////////////
 
@@ -122,31 +128,27 @@ module pcb() {
       translate([px-mi,mi,-oc]) cylinder(oc+pz+oc,spir,spir);
       translate([mi,py-mi,-oc]) cylinder(oc+pz+oc,spir,spir);
       translate([px-mi,py-mi,-oc]) cylinder(oc+pz+oc,spir,spir);
-    }  
+    }
   }
 }
 
 module walls() {
   difference() {
     group() { // add
-      // square corners
-      //translate([-l2w-wt,-f2w-wt,-pz-bch-wt]) cube([ew_x,ew_y,ew_z]); // exterior faces
-      // round corners
-      hull(){
-        $fa = 0.2; // make the exterior surface very smooth
-        $fs = 0.2; //
+      // exterior walls
+      if(cr<=0) translate([-l2w-wt,-f2w-wt,-pz-bch-wt]) cube([ew_x,ew_y,ew_z]); // square corners
+      else hull() {                                                             // round corners
         translate([-l2w+cr,-f2w+cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
         translate([px+r2w-cr,-f2w+cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
         translate([-l2w+cr,py+b2w-cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
         translate([px+r2w-cr,py+b2w-cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
       }
-      
+
     } // add
     group() { // remove
-      // square corners
-      //translate([-l2w,-f2w,-pz-bch-wt-wt]) cube([iw_x,iw_y,ew_z]); // interior faces
-      // round corners
-      hull(){
+      // interior walls
+      if(cr<=0) translate([-l2w,-f2w,-pz-bch-wt-wt]) cube([iw_x,iw_y,ew_z]);  // square corners
+      else hull() {                                                           // round corners
         translate([-l2w+cr,-f2w+cr,-pz-bch-wt-oc]) cylinder(ew_z-wt+oc,cr,cr);
         translate([px+r2w-cr,-f2w+cr,-pz-bch-wt-oc]) cylinder(ew_z-wt+oc,cr,cr);
         translate([-l2w+cr,py+b2w-cr,-pz-bch-wt-oc]) cylinder(ew_z-wt+oc,cr,cr);
@@ -217,7 +219,7 @@ module cf_holder() {
   cft_cny = 4.83;    // cf tray clearance notch, inner tray rear to notch side
   cft_cnl = 10.66;   // cf tray clearance notch, width
   cft_cnh = 1.27;    // cf tray clearance notch, floor height (top wall inner surface to notch floor)
-  
+
   // cf bar pocket
   cfb1x = 2.54;
   cfb1y = 12;
@@ -232,13 +234,13 @@ module cf_holder() {
 
       // bar closed end pocket
       translate([-cfb1x-2.54-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-4,0]) cube([cfb1x+2.54,4+cfb1y+4,cfb1z+2]);
-      
+
       // bar open end slot
       translate([cft_w/2+cfb2xloc,cft_f2w+cft_d-cfb2y+cfb2yloc-2,0]) cube([cfb2x+2.54,cfb2y+2,cfb2z]);
-      
+
       // bar front lip
       translate([-cft_otw/2,0,cf_h+twt-.001]) cube([cft_otw,cft_f2w+3,twt]);
-      
+
     }
     group(){
       translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+oc]); // tunnel
@@ -249,10 +251,10 @@ module cf_holder() {
       translate([-cft_w/2-cft_wt-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
       translate([cft_w/2-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
-      
+
       // notch to clear some components on cf reader pcb
       translate([-cft_w/2-cft_wt-oc,cft_f2w+cft_d-cft_cnl-cft_cny,cft_cnh]) cube([oc+cft_wt+oc,cft_cnl,cft_wh-cft_cnh+oc]);
-      
+
       // bar closed end pocket
       translate([-cfb1x-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc,0]) cube([cfb1x+oc,cfb1y,cfb1z]);
 
@@ -269,7 +271,7 @@ module cf_holder() {
 // main
 //
 union() { // all
-  //#pcb();  // show pcb for reference
+  %#pcb();
   difference(){
     group(){
       walls();
@@ -283,4 +285,3 @@ union() { // all
     }
   }
 } // all
-
