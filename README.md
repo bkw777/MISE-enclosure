@@ -5,6 +5,9 @@ http://bartlettlabs.com/M3SE/index.html
 The source design file is written in OpenSCAD  
 https://www.openscad.org/
 
+![](MISE_Enclosure.png)
+![](MISE_Enclosure_1.png)
+![](MISE_Enclosure_2.png)
 ![](top_cover.png)
 ![](bottom_cover.png)
 ![](retainer.png)
