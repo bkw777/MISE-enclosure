@@ -1,5 +1,12 @@
-// M1SE Enclosure - Top Cover
+// M1SE/M3SE Enclosure - Top Cover
 // b.kenyon.w@gmail.com
+
+// M1SE or M3SE
+// M3SE can be used for both.
+// The only difference is M1SE has a 40 conductor bus cable,
+// and M3SE has a 50 conductor bus cable.
+// The M3SE version has a slot wide enough for the 50 wire ribbon cable.
+variant="M3SE";
 
 // PCB dimensions
 // https://groups.yahoo.com/neo/groups/TRS80MISE/conversations/topics/157
@@ -10,6 +17,7 @@
 px = 133.858; // pcb x len
 py = 109.601; // pcb y len
 mi = 6.35;    // mounting holes inset from pcb edges
+mhd = 4.75;    // mount hole diameter
 
 // rear wall holes
 vga_w = 35.814;
@@ -37,7 +45,8 @@ cf_w = 43.18;    // cf width
 cf_xc = joy_xc;  // cf x center
 
 // right wall holes
-bus_w = 51.562; // bus cable width
+bus_cable_conductors = (variant=="M1SE") ? 40 : 50;
+bus_w = bus_cable_conductors * 1.27 + 1; // bus cable width
 bus_h = 6.35;   // bus cable height
 bus_yc = -5.33; // pcb center to bus cable center
                 // bus cable z bottom = ew_z bottom
@@ -67,23 +76,11 @@ assert(r2w>=1,"r2w must be enough to allow the bus cable to fit between the pcb 
 b2w = nic_pcb_overhang;  // back  pcb edge to back  inside wall - must be nic_pcb_overhang or greater
 assert(b2w>=nic_pcb_overhang,"b2w must be >= nic_pcb_overhang");
 
-spor = 4.572; // screw post outside radius
-spir = 1.8;   // screw post inside  radius
-
-// tight cf tray
-//cft_w = 47.117; // cf tray inside width
-//cft_d = 27.178; // cf tray inside depth
-// loose cf tray
-cft_w = 47.3; // cf tray inside width
-cft_d = 27.4; // cf tray inside depth
-
-// This controls how far the CF cards stick out of the front of the enclosure.
-// This can vary from 0 to almost 9 in theory. (at 9 you would need fingernails to get the CF cards out)
-cft_f2w = 5.842;  // cf tray inside front to inside front wall
-//cft_f2w = 0;
-                  // cf tray X center = cf opening X center = js_xc
-cft_wt = 2.4;     // cf tray wall thickness
-cft_wh = 2.54;    // cf tray wall height
+// screw posts and countersinks
+screw_d = 3.5;  // screw diameter - #6 = 0.14" = 3.5
+screw_fhr = 4 ; // flat head radius
+spir = screw_d/2-0.4; // screw post inside radius
+spor = spir+2; // screw post outside radius
 
 // interior walls
 iw_x = l2w + px + r2w;
@@ -99,19 +96,67 @@ ew_y = wt + iw_y + wt;  // total exterior Y depth
 ew_z = iw_z + wt;       // total exterior Z height
 
 // wall corners radius, 0 to 13
-// 0 = square corners, 0.001 = inside square, outside round, >0 = round corners, >13 = invalid, hits pcb corners
+// 0 = square corners
+// 0.001 = square inside, round outside thickness of walls
+// >0 = round corners
+// >13 = invalid, hits pcb corners
 cr = 6; // vertical corners inside radius
 
 oc = 0.1;  // overcut - extend subtraction shapes past the edges of the shapes they cut from, to avoid making zero-thickness features
 twt = 1.6; // tunnel wall thickness
 p2t = 0.5; // any pcb edge pcb to any tunnel end
 
-// cf bar slot
+joy_t = f2w-joy_f-p2t; // joystick tunnel length
+
+// CF reader
+
+// tight cf tray - dims from original FreeCAD version
+//cft_w = 47.117; // cf tray inside width
+//cft_d = 27.178; // cf tray inside depth
+// loose cf tray - my reader does fit but zero play
+//cft_w = 47.3; // cf tray inside width
+//cft_d = 27.4; // cf tray inside depth
+// looser cf tray
+cft_w = 47.5; // cf tray inside width
+cft_d = 27.6; // cf tray inside depth
+
+// This controls how far the CF cards stick out of the front of the enclosure.
+// This can vary from 0 to almost 9 in theory. (at 9 you would need fingernails to get the CF cards out)
+cft_f2w = 5.842;  // cf tray inside front to inside front wall
+//cft_f2w = 0;
+                  // cf tray X center = cf opening X center = js_xc
+cft_wt = 2.4;     // cf tray wall thickness
+cft_wh = 2.54;    // cf tray wall height
+
+cft_ow = cft_wt+cft_w+cft_wt; // cf tray outer walls
+cft_otw = twt+cf_w+twt;       // cf tunnel outer walls
+
+cft_cny = 4.83;    // cf tray clearance notch, inner tray rear to notch side
+cft_cnl = 10.66;   // cf tray clearance notch, width
+cft_cnh = 1.27;    // cf tray clearance notch, floor height (top wall inner surface to notch floor)
+
+// cf retainer lid thickness
+cflt = twt;
+
+// cf bar pocket (closed end)
+cfb1x = 4;
+cfb1y = 10;
+cfb1z = 2;
+cfb1xloc = 17.52;  // tray side to pocket side
+cfb1yloc = 0;      // tray rear to pocket rear
+
+// cf bar slot (open end)
+cfrrb = 2;         // cf retainer retainer bump
 cfb2x = 2.54;
-cfb2y = 14;
-cfb2z = 14.48;
+cfb2y = cfb1y;
+cfb2z = cf_h+cflt+3;
 cfb2xloc = 5.14;
-cfb2yloc = 2.54;
+cfb2yloc = cfrrb;
+
+// cf retainer bar
+cfbpostw = 4.3;
+cfbposth = cf_h+cflt;
+cfbarlen = cfb2xloc+cft_ow+cfb1xloc-cfbpostw;
 
 // smoother curves (less vibration while printing)
 $fa = 0.5; // facet angle
@@ -119,18 +164,6 @@ $fs = 0.4; // facet size
 
 
 ///////////////////////////////////////////////////
-
-module pcb() {
-  translate([0,0,-pz]) difference(){
-    cube([px,py,pz]);
-    group(){
-      translate([mi,mi,-oc]) cylinder(oc+pz+oc,spir,spir);
-      translate([px-mi,mi,-oc]) cylinder(oc+pz+oc,spir,spir);
-      translate([mi,py-mi,-oc]) cylinder(oc+pz+oc,spir,spir);
-      translate([px-mi,py-mi,-oc]) cylinder(oc+pz+oc,spir,spir);
-    }
-  }
-}
 
 module walls() {
   difference() {
@@ -172,7 +205,6 @@ module walls() {
 
 module tunnels() {
   // CF tunnel is a special case and is defined in the cf_holder() module
-  joy_t = f2w-joy_f-p2t; // joystick tunnel length
   difference() {
     group() {
       translate([px/2+vga_xc-(vga_w/2)-twt,py+p2t,vga_zb-twt]) cube([twt+vga_w+twt,b2w+oc-p2t,twt+vga_h+twt]); // vga opening
@@ -199,7 +231,7 @@ module post() {
     }
     group() {
       cylinder(iw_h,spir,spir);
-      // chamfer provides cavity for plastic displaced by the screw instead of mushrooming up the top surface
+      // this cone makes a chamfer to provide a cavity for plastic displaced by the screw instead of mushrooming up the top surface
       translate([0,0,-oc]) cylinder(1.6+oc,spir+0.8,spir-0.8);
     }
   }
@@ -213,75 +245,193 @@ module posts() {
 }
 
 module cf_holder() {
-  cft_ow = cft_wt+cft_w+cft_wt; // cf tray outer walls
-  cft_otw = twt+cf_w+twt;       // cf tunnel outer walls
-
-  cft_cny = 4.83;    // cf tray clearance notch, inner tray rear to notch side
-  cft_cnl = 10.66;   // cf tray clearance notch, width
-  cft_cnh = 1.27;    // cf tray clearance notch, floor height (top wall inner surface to notch floor)
-
-  // cf bar pocket
-  cfb1x = 2.54;
-  cfb1y = 12;
-  cfb1z = 2.54;
-  cfb1xloc = 17.52;  // tray side to pocket side
-  cfb1yloc = 2.54;   // tray rear to pocket rear
-
   translate([px/2+cf_xc,-f2w,iw_h+.001]) rotate([0,180,0]) difference(){
     group(){
-      translate([-cft_otw/2,0,0]) cube([cft_otw,cft_f2w,cf_h+twt]); // tunnel
-      translate([-cft_ow/2,cft_f2w,0]) cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
+      translate([-cft_otw/2,0,0])
+        cube([cft_otw,cft_f2w,cf_h+twt]); // tunnel
+      translate([-cft_ow/2,cft_f2w,0])
+        cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
       // bar closed end pocket
-      translate([-cfb1x-2.54-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-4,0]) cube([cfb1x+2.54,4+cfb1y+4,cfb1z+2]);
+      translate([-cfb1x-2-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-4,0])
+        cube([cfb1x+2,4+cfb1y+4,cfb1z+2]);
 
       // bar open end slot
-      translate([cft_w/2+cfb2xloc,cft_f2w+cft_d-cfb2y+cfb2yloc-2,0]) cube([cfb2x+2.54,cfb2y+2,cfb2z]);
+      translate([cft_w/2+cfb2xloc,cft_f2w+cft_d-cfb2y+cfb2yloc-cfrrb-3,0])
+        cube([cfb2x+2.54,cfb2y+cfrrb+3,cfb2z]);
 
-      // bar front lip
-      translate([-cft_otw/2,0,cf_h+twt-.001]) cube([cft_otw,cft_f2w+3,twt]);
+      // bar front retainer lip
+      translate([-cft_otw/2,0,cf_h+cflt+0.1])
+        cube([cft_otw,cft_f2w+3,twt]);
 
     }
     group(){
       translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+oc]); // tunnel
       translate([-cft_w/2,cft_f2w,-oc]) cube([cft_w,cft_d,oc+cft_wh+oc]); // tray
 
-      // knock out the inside corners of the tray to compensate for imperfect 3d-printing
+      // knock out the corners of the tray for easier fitment and to compensate for printing
       translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
       translate([cft_w/2-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
 
       // notch to clear some components on cf reader pcb
-      translate([-cft_w/2-cft_wt-oc,cft_f2w+cft_d-cft_cnl-cft_cny,cft_cnh]) cube([oc+cft_wt+oc,cft_cnl,cft_wh-cft_cnh+oc]);
+      translate([-cft_w/2-cft_wt-oc,cft_f2w+cft_d-cft_cnl-cft_cny,cft_cnh])
+        cube([oc+cft_wt+oc,cft_cnl,cft_wh-cft_cnh+oc]);
 
       // bar closed end pocket
-      translate([-cfb1x-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc,0]) cube([cfb1x+oc,cfb1y,cfb1z]);
+      translate([-cfb1x-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-0.1,0])
+        cube([cfb1x+oc,cfb1y+0.2,cfb1z+0.1]);
 
       // bar open end slot
-      // this has to be done out in main() instead of here,
-      // if you want it to cut into screw post
-      //translate([cft_w/2+cfb2x+cfb2xloc-0.001,cft_f2w+cft_d+cfb2yloc+0.001,8.636]) rotate([90,0,-90]) linear_extrude(cfb2x) polygon([ [0,0],[0,3.56],[1.14,2.54],[2.67,2.54],[3.81,3.56],[cfb2y,3.56],[cfb2y,0] ]);
+      translate([cft_w/2+cfb2xloc+cfb2x+oc,cft_f2w+cft_d+cfrrb+0.001,cf_h-0.9])
+        rotate([90,0,-90])
+          linear_extrude(cfb2x+0.1+oc)
+            polygon([
+              [0,0],
+              [0,cflt+1],
+              [cfrrb/3,cflt+0.5],
+              [2*cfrrb/3,cflt+0.5],
+              [cfrrb,cflt+1],
+              [cfb2y+cfrrb+0.11,cflt+1],
+              [cfb2y+cfrrb+0.11,0]
+            ]);
 
     }
   }
 }
 
-//
-// main
-//
-union() { // all
-  %#pcb();
-  difference(){
+//////////////////////////////////////////////////////////////////////
+
+module pcb() {
+  translate([0,0,-pz]) difference(){
+    cube([px,py,pz]);
     group(){
-      walls();
-      tunnels();
-      posts();
-      cf_holder();
-    }
-    group(){
-      // bar open end slot
-      translate([-cfb2x+px/2+cf_xc-cft_w/2-cfb2xloc+.001,-f2w+cft_f2w+cft_d+cfb2yloc+.001,+iw_h-8.636]) rotate([-90,0,-90]) linear_extrude(cfb2x) polygon([ [0,0],[0,3.56],[1.14,2.54],[2.67,2.54],[3.81,3.56],[cfb2y,3.56],[cfb2y,0] ]);
+      translate([mi,mi,-oc]) cylinder(oc+pz+oc,d=mhd);
+      translate([px-mi,mi,-oc]) cylinder(oc+pz+oc,d=mhd);
+      translate([mi,py-mi,-oc]) cylinder(oc+pz+oc,d=mhd);
+      translate([px-mi,py-mi,-oc]) cylinder(oc+pz+oc,d=mhd);
     }
   }
-} // all
+}
+
+// obstructions, parts of cf card reader
+module reader() {
+    // JP1
+    translate([6.2+10.1,mi+25.2,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
+    // JP2
+    translate([6.2+60.2,mi+11.6,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
+    // power
+    translate([6.2+56.7,mi-2.7,iw_h-cf_h-4]) #cube([10,3.2,8]);
+}
+
+module top_cover () {
+  walls();
+  tunnels();
+  posts();
+  cf_holder();
+} // top_cover
+
+module bottom_cover () {
+  difference(){
+    group(){
+      // base plate
+      if(cr<=0) translate([-l2w,-f2w,-pz-bch-wt-wt]) cube([iw_x,iw_y,wt]);  // square corners
+      else hull() {                                                           // round corners
+        translate([-l2w+cr,-f2w+cr,-pz-bch-wt]) cylinder(wt,cr-0.5,cr-0.5);
+        translate([px+r2w-cr,-f2w+cr,-pz-bch-wt]) cylinder(wt,cr-0.5,cr-0.5);
+        translate([-l2w+cr,py+b2w-cr,-pz-bch-wt]) cylinder(wt,cr-0.5,cr-0.5);
+        translate([px+r2w-cr,py+b2w-cr,-pz-bch-wt]) cylinder(wt,cr-0.5,cr-0.5);
+      }
+      translate([mi,mi,-pz-bch-oc]) cylinder(bch+oc,spor+2,spor);
+      translate([mi,py-mi,-pz-bch-oc]) cylinder(bch+oc,spor+2,spor);
+      translate([px-mi,mi,-pz-bch-oc]) cylinder(bch+oc,spor+2,spor);
+      translate([px-mi,py-mi,-pz-bch-oc]) cylinder(bch+oc,spor+2,spor);
+    }
+    // r*1.15 makes 82 degree cone - countersink for screw head
+    group(){
+      translate([mi,mi,-pz-bch-wt-oc]) {
+        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(screw_fhr*1.15,screw_fhr,0);
+      }
+      translate([mi,py-mi,-pz-bch-wt-oc]) {
+        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(screw_fhr*1.15,screw_fhr,0);
+      }
+      translate([px-mi,mi,-pz-bch-wt-oc]) {
+        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(screw_fhr*1.15,screw_fhr,0);
+      }
+      translate([px-mi,py-mi,-pz-bch-wt-oc]) {
+        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(screw_fhr*1.15,screw_fhr,0);
+      }
+    }
+  }
+}
+
+module retainer () {
+  difference(){
+  group(){  // add
+  // lid
+  translate([(cft_w-cft_otw)/2,0.1,0]) cube([cft_otw,cft_d-0.2,cflt]);
+  // cross bar top
+  translate([-cfb2xloc-cfb2x+cfbpostw/2,cft_d+cfbpostw/2-cfb2y,0])
+  hull(){
+      cylinder(h=cflt,d=cfbpostw);
+      translate([0,cfb2y-cfbpostw,0]) cylinder(h=cflt,d=cfbpostw);
+      translate([cfbarlen-cfbpostw/2-0.3,0,0]) cylinder(h=cflt,d=cfbpostw);
+      translate([cfbarlen-cfbpostw/2-0.3,cfb2y-cfbpostw,0]) cylinder(h=cflt,d=cfbpostw);
+  }
+  // cross bar extra
+  cfbeh=12.9-cf_h;
+  translate([-cfb2xloc+cfbpostw/2+0.1,cft_d+cfbpostw/2-cfb2y,-cflt])
+  hull(){
+      cylinder(h=cfbeh,d=cfbpostw);
+      translate([0,cfb2y-cfbpostw,0]) cylinder(h=cfbeh,d=cfbpostw);
+      translate([cfbarlen-cfb2x-cfbpostw/2-0.3,0,0]) cylinder(h=cfbeh,d=cfbpostw);
+      translate([cfbarlen-cfb2x-cfbpostw/2-0.3,cfb2y-cfbpostw,0]) cylinder(h=cfbeh,d=cfbpostw);
+  }
+  // leg
+  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,0]) {
+    hull() {
+      cylinder(h=cfbposth,d=cfbpostw);
+      translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfbposth,d=cfbpostw);
+    }
+  }
+  // foot
+  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,cfbposth-cfb1z]) {
+    hull() {
+      cylinder(h=cfb1z,d=cfbpostw);
+      translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-1,0,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-1,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
+    }
+  }
+  } // group add
+  group () { // remove
+    rotate([0,0,10]) translate([4.8,24,-1.1]) cube([8,6,3]);
+    translate([52,20.5,-1.1]) rotate([0,0,10]) cube([8,2.9,3]);
+    translate([51.5,23.3,-1.1]) cube([8,5,3]);
+  } // group remove
+} // difference
+} // retainer
+
+///////////////////////////////////////////////////////////////////////
+
+// Makefile support - allow Makefile to generate STL for individual parts
+// Generate STL rotated as appropriate for best FDM printing
+make = "none";
+if(make=="top_cover") rotate([180,0,0]) top_cover();
+else if(make=="bottom_cover") bottom_cover();
+else if(make=="retainer") rotate([-90,0,0]) retainer();
+else {
+// Normal/Interactive
+//%pcb();
+//#reader();
+top_cover();
+%bottom_cover();
+//rotate([0,0,-10]) translate([-4.5,14,0])  // rotate retainer to un-latched position
+translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cf_h-cflt])
+  retainer();
+}

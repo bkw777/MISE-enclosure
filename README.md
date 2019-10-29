@@ -2,10 +2,17 @@
 http://bartlettlabs.com/MISE/index.html  
 http://bartlettlabs.com/M3SE/index.html
 
-The source design files are the *.FCStd files, which are used with FreeCAD.  
+The source design file is written in OpenSCAD  
+https://www.openscad.org/
+
+![](top_cover.png)
+![](bottom_cover.png)
+![](retainer.png)
+
+There are also FreeCAD files in the FreeCAD directory. These are the original design, but the files are difficult to edit without breaking the model.  
 http://www.freecadweb.org/
 
-The *.stl files are for getting 3D prints of the parts.
+The *.stl files are for 3d-printing.
 
 Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99  
 (scroll to the bottom for the most recent)
@@ -13,18 +20,9 @@ Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99
 ### Directions:
 
 #### 1 - 3D print the *.stl files
-**MISE**:  
- MISE_top_cover.stl  
- MISE_cf_retainer.stl  
- MISE_base_plate.stl  
- 
-**M3SE**:  
- M3SE_top_cover.stl  
- MISE_cf_retainer.stl  
- MISE_base_plate.stl  
-
-MISE and M3SE both use the same cf_retainer and base_plate. The only difference is M3SE has a wider ribbon cable opening.  
-You could really just use the M3SE version for both, but I like mine with the opening only exactly as big as the ribbon cable, so I provide both versions here.
+ top_cover.stl  
+ bottom_cover.stl  
+ retainer.stl  
 
 #### 2 - Aquire the following parts
 
