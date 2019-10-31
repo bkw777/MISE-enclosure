@@ -139,9 +139,9 @@ cft_cnh = 1.27;    // cf tray clearance notch, floor height (top wall inner surf
 cflt = twt;
 
 // cf bar pocket (closed end)
-cfb1x = 4;
+cfb1x = 3;
 cfb1y = 10;
-cfb1z = 2;
+cfb1z = cflt;
 cfb1xloc = 17.52;  // tray side to pocket side
 cfb1yloc = 0;      // tray rear to pocket rear
 
@@ -253,8 +253,8 @@ module cf_holder() {
         cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
       // bar closed end pocket
-      translate([-cfb1x-2-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-4,0])
-        cube([cfb1x+2,4+cfb1y+4,cfb1z+2]);
+      translate([-cfb1x-1-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-2,0])
+        cube([cfb1x+1,2+cfb1y+2,cfb1z*2]);
 
       // bar open end slot
       translate([cft_w/2+cfb2xloc,cft_f2w+cft_d-cfb2y+cfb2yloc-cfrrb-3,0])
@@ -284,16 +284,18 @@ module cf_holder() {
         cube([cfb1x+oc,cfb1y+0.2,cfb1z+0.1]);
 
       // bar open end slot
-      translate([cft_w/2+cfb2xloc+cfb2x+oc,cft_f2w+cft_d+cfrrb+0.001,cf_h-0.9])
+      slot_extra_z = 0.5;
+      slot_pinch_clearance = 0;
+      translate([cft_w/2+cfb2xloc+cfb2x+oc,cft_f2w+cft_d+cfrrb+0.001,cf_h-slot_extra_z+0.1])
         rotate([90,0,-90])
           linear_extrude(cfb2x+0.1+oc)
             polygon([
               [0,0],
-              [0,cflt+1],
-              [cfrrb/3,cflt+0.5],
-              [2*cfrrb/3,cflt+0.5],
-              [cfrrb,cflt+1],
-              [cfb2y+cfrrb+0.11,cflt+1],
+              [0,cflt+slot_extra_z],
+              [cfrrb/3,cflt+slot_pinch_clearance],
+              [2*cfrrb/3,cflt+slot_pinch_clearance],
+              [cfrrb,cflt+slot_extra_z],
+              [cfb2y+cfrrb+0.11,cflt+slot_extra_z],
               [cfb2y+cfrrb+0.11,0]
             ]);
 
@@ -404,8 +406,8 @@ module retainer () {
     hull() {
       cylinder(h=cfb1z,d=cfbpostw);
       translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
-      translate([cfb1x-1,0,0]) cylinder(h=cfb1z,d=cfbpostw);
-      translate([cfb1x-1,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-0.5,0,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-0.5,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
     }
   }
   } // group add
