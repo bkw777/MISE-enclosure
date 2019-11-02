@@ -1,11 +1,10 @@
 // M1SE/M3SE Enclosure - Top Cover
 // b.kenyon.w@gmail.com
 
-// M1SE or M3SE
-// M3SE can be used for both.
-// The only difference is M1SE has a 40 conductor bus cable,
-// and M3SE has a 50 conductor bus cable.
-// The M3SE version has a slot wide enough for the 50 wire ribbon cable.
+// Which version to generate, M1SE or M3SE
+// The only difference is the width of the slot for the bus cable.
+// M1SE has a 40-wire cable, M3SE has a 50-wire cable.
+// M3SE version can be used for both M3SE and M1SE.
 variant="M3SE";
 
 // PCB dimensions
@@ -110,15 +109,9 @@ joy_t = f2w-joy_f-p2t; // joystick tunnel length
 
 // CF reader
 
-// tight cf tray - dims from original FreeCAD version
-//cft_w = 47.117; // cf tray inside width
-//cft_d = 27.178; // cf tray inside depth
-// loose cf tray - my reader does fit but zero play
-//cft_w = 47.3; // cf tray inside width
-//cft_d = 27.4; // cf tray inside depth
-// looser cf tray
-cft_w = 47.5; // cf tray inside width
-cft_d = 27.6; // cf tray inside depth
+// 
+cft_w = 47.3; // cf tray inside width
+cft_d = 27.4; // cf tray inside depth
 
 // This controls how far the CF cards stick out of the front of the enclosure.
 // This can vary from 0 to almost 9 in theory. (at 9 you would need fingernails to get the CF cards out)
@@ -139,10 +132,10 @@ cft_cnh = 1.27;    // cf tray clearance notch, floor height (top wall inner surf
 cflt = twt;
 
 // cf bar pocket (closed end)
-cfb1x = 3;
+cfb1x = 4;
 cfb1y = 10;
 cfb1z = cflt;
-cfb1xloc = 17.52;  // tray side to pocket side
+cfb1xloc = 18;  // tray side to pocket side
 cfb1yloc = 0;      // tray rear to pocket rear
 
 // cf bar slot (open end)
@@ -154,8 +147,8 @@ cfb2xloc = 5.14;
 cfb2yloc = cfrrb;
 
 // cf retainer bar
-cfbpostw = 4.3;
-cfbposth = cf_h+cflt;
+cfbpostw = 4;
+cfb_top = 13; // highest surface on retainer bar - limited by another circuit board which comes dowm very close to the top of JP1. Make this as tall as possible to get above JP1 so plastic can come between the top of JP1 and the other circuit board, to protect against shorts.
 cfbarlen = cfb2xloc+cft_ow+cfb1xloc-cfbpostw;
 
 // smoother curves (less vibration while printing)
@@ -253,8 +246,8 @@ module cf_holder() {
         cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
       // bar closed end pocket
-      translate([-cfb1x-1-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-2,0])
-        cube([cfb1x+1,2+cfb1y+2,cfb1z*2]);
+      translate([-cfb1x-2-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-4,0])
+        cube([cfb1x+2,4+cfb1y+4,cfb1z*2]);
 
       // bar open end slot
       translate([cft_w/2+cfb2xloc,cft_f2w+cft_d-cfb2y+cfb2yloc-cfrrb-3,0])
@@ -281,7 +274,7 @@ module cf_holder() {
 
       // bar closed end pocket
       translate([-cfb1x-cft_w/2-cfb1xloc,cft_f2w+cft_d-cfb1y-cfb1yloc-0.1,0])
-        cube([cfb1x+oc,cfb1y+0.2,cfb1z+0.1]);
+        cube([cfb1x+oc,cfb1y+0.2,cfb1z+0.2]);
 
       // bar open end slot
       slot_extra_z = 0.5;
@@ -320,11 +313,11 @@ module pcb() {
 // obstructions, parts of cf card reader
 module reader() {
     // JP1
-    translate([6.2+10.1,mi+25.2,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
+    translate([6.2+10.1,mi+17.53,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
     // JP2
-    translate([6.2+60.2,mi+11.6,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
+    translate([6.2+60.2,mi+11.6,iw_h-cf_h-2.6]) cube([6.2,2.1,4]);
     // power
-    translate([6.2+56.7,mi-2.7,iw_h-cf_h-4]) #cube([10,3.2,8]);
+    translate([6.2+56.7,mi-2.7,iw_h-cf_h-4]) cube([10,3.2,8]);
 }
 
 module top_cover () {
@@ -373,48 +366,59 @@ module bottom_cover () {
 }
 
 module retainer () {
+  lid_top = cfb_top-cf_h-cflt;
+  cfb_t = cfb_top - cf_h;
   difference(){
   group(){  // add
   // lid
-  translate([(cft_w-cft_otw)/2,0.1,0]) cube([cft_otw,cft_d-0.2,cflt]);
-  // cross bar top
-  translate([-cfb2xloc-cfb2x+cfbpostw/2,cft_d+cfbpostw/2-cfb2y,0])
+  translate([(cft_w-cft_otw)/2,0.1,lid_top]) cube([cft_otw,cft_d-0.2,cflt]);
+  // cross bar / top tab
+  translate([-cfb2xloc-cfb2x+cfbpostw/2,cft_d+cfbpostw/2-cfb2y,lid_top])
   hull(){
       cylinder(h=cflt,d=cfbpostw);
       translate([0,cfb2y-cfbpostw,0]) cylinder(h=cflt,d=cfbpostw);
-      translate([cfbarlen-cfbpostw/2-0.3,0,0]) cylinder(h=cflt,d=cfbpostw);
-      translate([cfbarlen-cfbpostw/2-0.3,cfb2y-cfbpostw,0]) cylinder(h=cflt,d=cfbpostw);
+      translate([cft_w+cfb1xloc-cfbpostw-0.2,0,0]) cylinder(h=cflt,d=cfbpostw);
+      translate([cft_w+cfb1xloc-cfbpostw-0.2,cfb2y-cfbpostw,0]) cylinder(h=cflt,d=cfbpostw);
   }
-  // cross bar extra
-  cfbeh=12.9-cf_h;
-  translate([-cfb2xloc+cfbpostw/2+0.1,cft_d+cfbpostw/2-cfb2y,-cflt])
+  // cross bar extra beef
+  translate([-cfb2xloc+cfbpostw/2+0.2,cft_d+cfbpostw/2-cfb2y,0])
   hull(){
-      cylinder(h=cfbeh,d=cfbpostw);
-      translate([0,cfb2y-cfbpostw,0]) cylinder(h=cfbeh,d=cfbpostw);
-      translate([cfbarlen-cfb2x-cfbpostw/2-0.3,0,0]) cylinder(h=cfbeh,d=cfbpostw);
-      translate([cfbarlen-cfb2x-cfbpostw/2-0.3,cfb2y-cfbpostw,0]) cylinder(h=cfbeh,d=cfbpostw);
+      cylinder(h=cfb_t,d=cfbpostw);
+      translate([0,cfb2y-cfbpostw,0]) cylinder(h=cfb_t,d=cfbpostw);
+      translate([cfb2xloc-0.2+cft_w+cfb1xloc-cfbpostw-0.2,cfb2y-cfbpostw,0]) cylinder(h=cfb_t,d=cfbpostw);
+      translate([cfb2xloc-0.2+cft_w+cfb1xloc-cfbpostw-0.2,0,0]) cylinder(h=cfb_t,d=cfbpostw);
+      translate([cfb2xloc-0.2+cft_w+cfb1xloc-cfbpostw-0.2-4,-4,0]) cylinder(h=cfb_t,d=cfbpostw);
+      translate([4,-4,0]) cylinder(h=cfb_t,d=cfbpostw);
   }
+  translate([cft_otw+(cft_w-cft_otw)/2,3.1,cfb_top-cf_h-cflt])
+    rotate([-90,0,90])
+      linear_extrude(cft_otw)
+        polygon([ [0,0],[10.5,0],[10.5,cfb_top-cf_h-cflt] ]);
   // leg
-  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,0]) {
+  translate([cft_w+cfb1xloc-cfbpostw/2-0.2,cft_d-cfb1y+cfbpostw/2,0]) {
     hull() {
-      cylinder(h=cfbposth,d=cfbpostw);
-      translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfbposth,d=cfbpostw);
+      cylinder(h=cfb_top,d=cfbpostw);
+      translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfb_top,d=cfbpostw);
     }
   }
-  // foot
-  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,cfbposth-cfb1z]) {
+  // foot / bottom tab
+  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,cfb_top-cfb1z]) {
     hull() {
       cylinder(h=cfb1z,d=cfbpostw);
       translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
-      translate([cfb1x-0.5,0,0]) cylinder(h=cfb1z,d=cfbpostw);
-      translate([cfb1x-0.5,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-1,0,0]) cylinder(h=cfb1z,d=cfbpostw);
+      translate([cfb1x-1,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
     }
   }
   } // group add
   group () { // remove
-    rotate([0,0,10]) translate([4.8,24,-1.1]) cube([8,6,3]);
-    translate([52,20.5,-1.1]) rotate([0,0,10]) cube([8,2.9,3]);
-    translate([51.5,23.3,-1.1]) cube([8,5,3]);
+    // pockets for jumpers
+    // JP2
+    translate([1.8,17.5,1]) rotate([0,0,10]) cube([8,3.455,3]);
+    translate([1.2,20.9,1]) cube([8,7,3]);
+    // JP1
+    translate([52,20.5,1]) rotate([0,0,10]) cube([8,2.9,3]);
+    translate([51.5,23.3,1]) cube([8,5,3]);
   } // group remove
 } // difference
 } // retainer
@@ -427,13 +431,18 @@ make = "none";
 if(make=="top_cover") rotate([180,0,0]) top_cover();
 else if(make=="bottom_cover") bottom_cover();
 else if(make=="retainer") rotate([-90,0,0]) retainer();
+else if(make=="MISE_Enclosure") {
+        top_cover();
+        translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top]) retainer();
+        %bottom_cover();
+}
 else {
 // Normal/Interactive
 //%pcb();
-//#reader();
+//%reader();
 top_cover();
 %bottom_cover();
 //rotate([0,0,-10]) translate([-4.5,14,0])  // rotate retainer to un-latched position
-translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cf_h-cflt])
+translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top])
   retainer();
 }
