@@ -431,10 +431,24 @@ make = "none";
 if(make=="top_cover") rotate([180,0,0]) top_cover();
 else if(make=="bottom_cover") bottom_cover();
 else if(make=="retainer") rotate([-90,0,0]) retainer();
-else if(make=="MISE_Enclosure") {
-        top_cover();
-        translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top]) retainer();
-        %bottom_cover();
+else if(make=="MISE_Enclosure_1") {
+    top_cover();
+    translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top]) retainer();
+    bottom_cover();
+}
+else if(make=="MISE_Enclosure_2") {
+  rotate([180,0,0]){
+    top_cover();
+    translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top]) retainer();
+    %bottom_cover();
+  }
+}
+else if(make=="MISE_Enclosure_3") {
+  rotate([180,0,0]){
+    top_cover();
+    rotate([0,0,-10]) translate([-4.5,14,0]) translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cfb_top]) retainer();
+    %bottom_cover();
+  }
 }
 else {
 // Normal/Interactive

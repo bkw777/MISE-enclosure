@@ -7,7 +7,7 @@ parts = top_cover bottom_cover retainer
 openscad = openscad-nightly
 
 .PHONY: all
-all: $(parts) $(model).png
+all: $(parts) $(model)_1.png $(model)_2.png $(model)_3.png
 
 .PHONY: $(parts)
 $(parts): %: %.stl %.png
@@ -31,4 +31,4 @@ help list:
 
 .PHONY: clean
 clean:
-	rm -f {$(parts)}.stl {$(parts)}.png
+	rm -f {$(parts)}.stl *.png
