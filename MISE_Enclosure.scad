@@ -78,8 +78,8 @@ assert(b2w>=nic_pcb_overhang,"b2w must be >= nic_pcb_overhang");
 // screw posts and countersinks
 screw_d = 3.5;  // screw diameter - #6 = 0.14" = 3.5
 screw_fhr = 4 ; // flat head radius
-spir = screw_d/2-0.4; // screw post inside radius
-spor = spir+2; // screw post outside radius
+spir = screw_d/2-0.1; // screw post inside radius
+spor = spir+3; // screw post outside radius
 
 // interior walls
 iw_x = l2w + px + r2w;
@@ -147,9 +147,14 @@ cfb2xloc = 5.14;
 cfb2yloc = cfrrb;
 
 // cf retainer bar
-cfbpostw = 4;
-cfb_top = 13; // highest surface on retainer bar - limited by another circuit board which comes dowm very close to the top of JP1. Make this as tall as possible to get above JP1 so plastic can come between the top of JP1 and the other circuit board, to protect against shorts.
-cfbarlen = cfb2xloc+cft_ow+cfb1xloc-cfbpostw;
+cfbpostw = 4;  // leg thickness
+
+// cfb_top is special
+// The back side of the FPGA board comes down very close to the top of the JP2 jumper on the card reader.
+// cfb_top should be as high as possible, touching the FPGA board.
+// This should allow about 1mm of plastic to cover the top of JP2 and act as a barrier to prevent JP2 from touching and shorting on the FPGA board.
+// If really needed, you can increase iw_h, which will increase the distance between the fpga board and the card reader.
+cfb_top = 13; // highest surface on retainer bar
 
 // smoother curves (less vibration while printing)
 $fa = 0.5; // facet angle
@@ -313,9 +318,9 @@ module pcb() {
 // obstructions, parts of cf card reader
 module reader() {
     // JP1
-    translate([6.2+10.1,mi+17.53,iw_h-cf_h-2.6]) #cube([6.2,2.1,4]);
-    // JP2
     translate([6.2+60.2,mi+11.6,iw_h-cf_h-2.6]) cube([6.2,2.1,4]);
+    // JP2
+    translate([6.2+10.1,mi+17.53,iw_h-cf_h-2.6]) cube([6.2,2.1,4]);
     // power
     translate([6.2+56.7,mi-2.7,iw_h-cf_h-4]) cube([10,3.2,8]);
 }
@@ -346,19 +351,19 @@ module bottom_cover () {
     // r*1.15 makes 82 degree cone - countersink for screw head
     group(){
       translate([mi,mi,-pz-bch-wt-oc]) {
-        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(bch+wt+2*oc,d=screw_d+0.2);
         cylinder(screw_fhr*1.15,screw_fhr,0);
       }
       translate([mi,py-mi,-pz-bch-wt-oc]) {
-        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(bch+wt+2*oc,d=screw_d+0.2);
         cylinder(screw_fhr*1.15,screw_fhr,0);
       }
       translate([px-mi,mi,-pz-bch-wt-oc]) {
-        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(bch+wt+2*oc,d=screw_d+0.2);
         cylinder(screw_fhr*1.15,screw_fhr,0);
       }
       translate([px-mi,py-mi,-pz-bch-wt-oc]) {
-        cylinder(bch+wt+2*oc,d=screw_d);
+        cylinder(bch+wt+2*oc,d=screw_d+0.2);
         cylinder(screw_fhr*1.15,screw_fhr,0);
       }
     }
@@ -402,7 +407,7 @@ module retainer () {
     }
   }
   // foot / bottom tab
-  translate([cft_w+cfb1xloc-cfbpostw/2-0.1,cft_d-cfb1y+cfbpostw/2,cfb_top-cfb1z]) {
+  translate([cft_w+cfb1xloc-cfbpostw/2-0.2,cft_d-cfb1y+cfbpostw/2,cfb_top-cfb1z]) {
     hull() {
       cylinder(h=cfb1z,d=cfbpostw);
       translate([0,cfb1y-cfbpostw,0]) cylinder(h=cfb1z,d=cfbpostw);
@@ -412,13 +417,19 @@ module retainer () {
   }
   } // group add
   group () { // remove
-    // pockets for jumpers
-    // JP2
+    // JP1 pocket
     translate([1.8,17.5,1]) rotate([0,0,10]) cube([8,3.455,3]);
     translate([1.2,20.9,1]) cube([8,7,3]);
-    // JP1
+    // JP2 pocket
     translate([52,20.5,1]) rotate([0,0,10]) cube([8,2.9,3]);
     translate([51.5,23.3,1]) cube([8,5,3]);
+    // open/close heel clearance
+    translate([cft_w+cfb1xloc-0.2-cfbpostw/2-0.01,cft_d-cfb1y,cfb_top-cfbpostw/2+0.01])
+      rotate([-90,180,0])
+      difference(){
+        translate ([0,0,-0.5]) cube([cfbpostw/2,cfbpostw/2,cfb1y+1]);
+        translate([0,0,-1]) cylinder(d=cfbpostw,h=cfb1y+2);
+      }
   } // group remove
 } // difference
 } // retainer
