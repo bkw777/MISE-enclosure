@@ -439,11 +439,11 @@ module retainer () {
 ///////////////////////////////////////////////////////////////////////
 
 // Makefile support - allow Makefile to generate STL for individual parts
-// Generate STL rotated as appropriate for best FDM printing
+// Rotate as appropriate for FDM printing
 make = "none";
 if(make=="top_cover") rotate([180,0,0]) top_cover();
 else if(make=="bottom_cover") bottom_cover();
-else if(make=="retainer") rotate([-90,0,0]) retainer();
+else if(make=="retainer") rotate([180,0,0]) retainer();
 else if(make=="MISE_Enclosure_1") {
     top_cover();
     translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cr_top]) retainer();
