@@ -109,10 +109,8 @@ p2t = 0.5; // any pcb edge pcb to any tunnel end
 joy_t = f2w-joy_f-p2t; // joystick tunnel length
 
 // CF reader
-
-// 
-cft_w = 47.3; // cf tray inside width
-cft_d = 27.4; // cf tray inside depth
+cft_w = 47.2; // cf tray inside width
+cft_d = 27.2; // cf tray inside depth
 
 // This controls how far the CF cards stick out of the front of the enclosure.
 // This can vary from 0 to almost 9 in theory. (at 9 you would need fingernails to get the CF cards out)
@@ -141,17 +139,19 @@ cr_top = 13; // highest surface on retainer bar
 cr_lt = cr_top - cf_h;
 
 cr_tab_w = 10;
-cr_tab_d = 4;
 cr_tab_wt = 3; // wall thickness around tab, all directions
-cr_tab_locx = px/2+cf_xc-mi-(cr_tab_d+cr_tab_wt)/2;
+cr_tab_pocket_wall_thickness = spor*2;
+cr_tab_locx = px/2+cf_xc-mi-cft_w/2; // centered on screw post
+cr_tab_pocket_wall_height = cr_top + cr_tab_wt;
+cr_leg_w = 4;  // leg thickness
+cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2-cr_leg_w/2;
+//cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2;
 
 // TODO - re-arrange this to be based off the edge of the reader pcb
 //        this dim is left over from the previous style with a foot tab that goes into a pocket
 // cf retainer latch block
 cr_latch_locx = 18; // tray side to pocket side
-
-// cf retainer bar
-cr_leg_w = 4;  // leg thickness
+cr_latch_handle = 12; // retainer bar extends past leg to make a finger-pull-able overhang
 
 // smoother curves (less vibration while printing)
 $fa = 0.5; // facet angle
@@ -190,6 +190,16 @@ module walls() {
       translate([px/2+joy_xc-(joy_w/2),-f2w-wt-oc,0]) cube([joy_w,oc+wt+oc,joy_h]); // joystick opening
       translate([px/2+cf_xc-(cf_w/2),-f2w-wt-oc,iw_h-cf_h]) cube([cf_w,oc+wt+oc,cf_h]); // cf opening
       translate([px+r2w-oc,py/2+bus_yc-bus_w/2,-pz-bch-wt-oc]) cube([oc+wt+oc,bus_w,bus_h+oc]); // bus opening
+
+      // bar lid front receptical groove
+      translate([px/2+cf_xc+cft_otw/2+oc,-f2w+0.001,iw_h-cf_h])
+        rotate([180,90,0])
+          linear_extrude(oc+cft_otw+oc)
+            polygon([
+              [0,0],
+              [cr_lt,0],
+              [cr_lt/2,cr_lt/3]
+            ]);
 
     } // remove
   }
@@ -240,14 +250,20 @@ module posts() {
 }
 
 module cf_holder() {
-  translate([px/2+cf_xc,-f2w,iw_h+.001]) rotate([0,180,0]) difference(){
+  p_wall_y1 = f2w+mi;
+  p_wall_y2 = cft_f2w+cft_d+cr_tab_wt;
+  cr_tab_pocket_wall_length = p_wall_y2 - p_wall_y1;
+
+  translate([px/2+cf_xc,-f2w,iw_h+.001])
+  rotate([0,180,0])
+  difference(){
     group(){
       translate([-cft_otw/2,0,0])
-        cube([cft_otw,cft_f2w,cf_h+twt]); // tunnel
+        cube([cft_otw,cft_f2w,cf_h-0.1]); // tunnel
       translate([-cft_ow/2,cft_f2w,0])
         cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
-      // bar latch block
+      // latch
       translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d-cr_tab_wt,0])
         cube([cr_tab_wt+cr_leg_w+cr_tab_wt,cr_tab_wt*2,cr_tab_wt]);
       translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_tab_wt-0.001,0])
@@ -260,20 +276,26 @@ module cf_holder() {
             ]);
 
       // bar pocket wall
-      translate([cr_tab_locx,cft_f2w+cft_d-cr_tab_w-cr_tab_wt,0])
-        cube([cr_tab_d+cr_tab_wt,cr_tab_wt+cr_tab_w+cr_tab_wt,cr_top+cr_tab_wt]);
+      translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2,p_wall_y1,0])
+        difference(){
+          cube([cr_tab_pocket_wall_thickness,cr_tab_pocket_wall_length,cr_top+cr_tab_wt]);
+          translate([cr_tab_pocket_wall_thickness/2,0,0]) cylinder(h=cr_tab_pocket_wall_height+oc,r=spor-oc);
+        }
 
       // bar lid front receptical groove
-      translate([-cft_otw/2,0,cf_h])
-        cube([cft_otw,cft_f2w+2,cr_lt]);
+      //translate([-cft_otw/2,0,cf_h])
+      //  cube([cft_otw,cft_f2w+2,cr_lt]);
+      //translate([-cft_otw/2,0,cf_h])
+      //  cube([cft_otw,2,cr_lt]);
 
     }
     group(){
-      translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+oc]); // tunnel
+      translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+0.01]); // tunnel
+      //translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+oc]); // tunnel
       translate([-cft_w/2,cft_f2w,-oc]) cube([cft_w,cft_d,oc+cft_wh+oc]); // tray
 
       // knock out the corners of the tray for easier fitment and to compensate for printing
-      translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
+      translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+1.01,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
       translate([cft_w/2-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
@@ -290,18 +312,8 @@ module cf_holder() {
         }
 
       // bar pocket
-      translate([cr_tab_locx-oc,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.2])
-        cube([oc+cr_tab_d*2+oc,0.2+cr_tab_w+2,0.2+cr_lt+0.2]);
-
-      // bar lid front receptical groove
-      translate([cft_otw/2+oc,cft_f2w+2+0.001,cf_h+cr_lt])
-        rotate([180,90,0])
-          linear_extrude(oc+cft_otw+oc)
-            polygon([
-              [0,0],
-              [cr_lt,0],
-              [cr_lt/2,cr_lt/3]
-            ]);
+      translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2-oc,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.2])
+        cube([oc+cr_tab_pocket_wall_thickness+oc,0.2+cr_tab_w+2,0.2+cr_lt+0.2]);
     }
   }
 }
@@ -345,7 +357,7 @@ module top_cover () {
   difference(){
     group(){ // add
       walls();
-      tunnels();
+      //tunnels();
       posts();
       cf_holder();
     }
@@ -395,15 +407,14 @@ module bottom_cover () {
 }
 
 module retainer () {
-  tab_len = cr_leg_w/2+cft_w/2-cr_tab_locx-cr_tab_d;
   difference(){
   group(){  // add
 
   // lid main
-  translate([(cft_w-cft_otw)/2,2+0.1,0]) cube([cft_otw,cft_d-2-0.1,cr_lt]);
+  translate([(cft_w-cft_otw)/2,0.1,0]) cube([cft_otw,cft_f2w+cft_d-2-0.1,cr_lt]);
 
   // lid front edge
-  translate([(cft_w-cft_otw)/2,2+0.1+0.001,0])
+  translate([(cft_w-cft_otw)/2,0.1+0.001,0])
     rotate([0,-90,180])
       linear_extrude(cft_otw)
         polygon([
@@ -413,16 +424,16 @@ module retainer () {
         ]);
 
   // lid tab
-  translate([tab_len,cft_d+cr_leg_w/2-cr_tab_w,0])
+  translate([-cr_tab_len,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
   hull(){
       cylinder(h=cr_lt,d=cr_leg_w);
       translate([0,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
-      translate([abs(tab_len)+cft_w+cr_latch_locx-cr_leg_w/2,0,0]) cylinder(h=cr_lt,d=cr_leg_w);
-      translate([abs(tab_len)+cft_w+cr_latch_locx-cr_leg_w/2,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
+      translate([cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,0,0]) cylinder(h=cr_lt,d=cr_leg_w);
+      translate([cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
   }
 
   // leg
-  translate([cft_w+cr_latch_locx-cr_leg_w/2,cft_d-cr_tab_w+cr_leg_w/2,0])
+  translate([cft_w+cr_latch_locx-cr_leg_w/2,cft_f2w+cft_d-cr_tab_w+cr_leg_w/2,0])
     hull(){
       cylinder(h=cr_top,d=cr_leg_w);
       translate([0,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_top,d=cr_leg_w);
@@ -431,7 +442,7 @@ module retainer () {
   } // group add
   group () { // remove
     // JP2 pocket
-    translate([51.5,23.3,1]) cube([8,5,3]);
+    translate([52.5-1,cft_f2w+24.5-1,0.8]) cube([1+6+1,1+2+1+1,6.5]);
   } // group remove
 } // difference
 } // retainer
@@ -468,8 +479,8 @@ else {
 //%pcb();
 //%reader();
 top_cover();
-//%bottom_cover();
+%bottom_cover();
 //rotate([0,2,13]) translate([4,-2.6,0.5])  // rotate retainer to un-latched position
-translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cr_top])
+translate ([px/2+cf_xc-cft_w/2,-f2w,iw_h-cr_top])
   retainer();
 }
