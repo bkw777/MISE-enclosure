@@ -34,7 +34,7 @@ nic_zt = 26.67;   // pcb Z top to nic Z top - NIC conector is the tallest top-si
 
 // front wall holes
 joy_h = 12.7;     // joystick height
-joy_w = 22.86;    // joystick width
+joy_w = 24;    // joystick width
 joy_xc = -29.337; // pcb center to js center
                   // joystick bottom = pcb top
 joy_f = 5.1;      // pcb front edge to joystick front
@@ -141,17 +141,19 @@ cr_top = 13; // highest surface on retainer bar
 cr_lt = cr_top - cf_h;
 
 cr_tab_w = 10;
-cr_tab_d = 4;
 cr_tab_wt = 3; // wall thickness around tab, all directions
-cr_tab_locx = px/2+cf_xc-mi-(cr_tab_d+cr_tab_wt)/2;
+cr_tab_pocket_wall_thickness = spor*2; // same as screw post diameter
+cr_tab_locx = px/2+cf_xc-mi-cr_tab_pocket_wall_thickness/2; // centered on screw post
+//cr_tab_locx = cft_w/2+cft_wt;
 
 // TODO - re-arrange this to be based off the edge of the reader pcb
 //        this dim is left over from the previous style with a foot tab that goes into a pocket
-// cf retainer latch block
-cr_latch_locx = 18; // tray side to pocket side
-
 // cf retainer bar
 cr_leg_w = 4;  // leg thickness
+// cf retainer latch block
+cr_latch_locx = 18; // tray side to pocket side
+//cr_latch_travel = cr_latch_locx - cr_leg_w;
+cr_latch_travel = 10;
 
 // smoother curves (less vibration while printing)
 $fa = 0.5; // facet angle
@@ -240,6 +242,12 @@ module posts() {
 }
 
 module cf_holder() {
+  cr_latch_w = cr_tab_wt+cr_tab_w-cr_leg_w/2;
+  cr_latch_ramp_l = cr_latch_travel-cr_leg_w/2;
+  cr_latch_ramp_h = 2;
+  cr_latch_ramp_cham = 0.5;
+  cr_latch_l = cr_tab_wt+cr_leg_w+cr_latch_ramp_l;
+
   translate([px/2+cf_xc,-f2w,iw_h+.001]) rotate([0,180,0]) difference(){
     group(){
       translate([-cft_otw/2,0,0])
@@ -248,20 +256,27 @@ module cf_holder() {
         cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
       // bar latch block
-      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d-cr_tab_wt,0])
-        cube([cr_tab_wt+cr_leg_w+cr_tab_wt,cr_tab_wt*2,cr_tab_wt]);
-      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_tab_wt-0.001,0])
-        rotate([90,0,90])
-          linear_extrude(cr_tab_wt+cr_leg_w+cr_tab_wt)
-            polygon([
-              [0,0],
-              [0,cr_tab_wt],
-              [8,0]
-            ]);
+      translate([-cft_w/2-cr_latch_locx-cr_latch_l+cr_leg_w+cr_tab_wt,cft_f2w+cft_d-cr_latch_w+cr_tab_wt,0])
+        cube([cr_latch_l,cr_latch_w,cr_tab_wt]);
+      //translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_tab_wt-0.001,0])
+      //  rotate([90,0,90])
+      //    linear_extrude(cr_tab_wt+cr_leg_w+cr_tab_wt)
+      //      polygon([
+      //        [0,0],
+      //        [0,cr_tab_wt],
+      //        [8,0]
+      //      ]);
 
       // bar pocket wall
-      translate([cr_tab_locx,cft_f2w+cft_d-cr_tab_w-cr_tab_wt,0])
-        cube([cr_tab_d+cr_tab_wt,cr_tab_wt+cr_tab_w+cr_tab_wt,cr_top+cr_tab_wt]);
+      p_wall_y1 = f2w+mi;
+      p_wall_y2 = cft_f2w+cft_d+cr_tab_wt;
+      cr_tab_pocket_wall_length = p_wall_y2 - p_wall_y1;
+      cr_tab_pocket_wall_height = cr_top+cr_tab_wt;
+      translate([cr_tab_locx,p_wall_y1,0])
+        difference(){
+          cube([cr_tab_pocket_wall_thickness,cr_tab_pocket_wall_length,cr_tab_pocket_wall_height]);
+          translate([cr_tab_pocket_wall_thickness/2,0,0]) cylinder(h=cr_tab_pocket_wall_height+oc,r=spor-oc);
+        }
 
       // bar lid front receptical groove
       translate([-cft_otw/2,0,cf_h])
@@ -273,7 +288,7 @@ module cf_holder() {
       translate([-cft_w/2,cft_f2w,-oc]) cube([cft_w,cft_d,oc+cft_wh+oc]); // tray
 
       // knock out the corners of the tray for easier fitment and to compensate for printing
-      translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
+      translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+1.01,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
       translate([-cft_w/2-cft_wt-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
       translate([cft_w/2-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
@@ -286,12 +301,23 @@ module cf_holder() {
       translate([-cft_w/2-cr_latch_locx+cr_leg_w/2,cft_f2w+cft_d-cr_leg_w/2,0])
         hull(){
           cylinder(h=cr_tab_wt,d=0.2+cr_leg_w,cr_tab_wt+oc);
-          translate([0,-cr_tab_wt,0]) cylinder(h=cr_tab_wt,d=0.2+cr_leg_w,cr_tab_wt+oc);
+          translate([0,-cr_tab_w,0]) cylinder(h=cr_tab_wt,d=0.2+cr_leg_w,cr_tab_wt+oc);
         }
+      // bar latch ramp
+      translate([-cft_w/2-cr_latch_locx-cr_latch_ramp_l-oc,cft_f2w+cft_d-cr_latch_w+cr_tab_wt-oc,0])
+      linear_extrude(cr_tab_wt+oc)
+      polygon([
+        [0,0],
+        [0,oc+cr_latch_w-cr_tab_wt+0.2],
+        [cr_latch_ramp_l-cr_latch_ramp_cham*2,oc+cr_latch_w-cr_tab_wt-cr_latch_ramp_h],
+        [cr_latch_ramp_l-cr_latch_ramp_cham,oc+cr_latch_w-cr_tab_wt-cr_latch_ramp_h],
+        [cr_latch_ramp_l+oc,oc+cr_latch_w-cr_tab_wt-cr_latch_ramp_h+cr_latch_ramp_cham],
+        [cr_latch_ramp_l+oc,0]
+      ]);
 
       // bar pocket
       translate([cr_tab_locx-oc,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.2])
-        cube([oc+cr_tab_d*2+oc,0.2+cr_tab_w+2,0.2+cr_lt+0.2]);
+        cube([oc+cr_tab_pocket_wall_thickness+oc,0.2+cr_tab_w+2,0.2+cr_lt+0.2]);
 
       // bar lid front receptical groove
       translate([cft_otw/2+oc,cft_f2w+2+0.001,cf_h+cr_lt])
@@ -395,7 +421,8 @@ module bottom_cover () {
 }
 
 module retainer () {
-  tab_len = cr_leg_w/2+cft_w/2-cr_tab_locx-cr_tab_d;
+  //tab_len = cr_tab_locx-cft_w/2+cr_tab_pocket_wall_thickness;
+  tab_len = cr_tab_locx-cft_w/2+cr_latch_travel;
   difference(){
   group(){  // add
 
@@ -412,13 +439,13 @@ module retainer () {
           [cr_lt/2,cr_lt/3]
         ]);
 
-  // lid tab
-  translate([tab_len,cft_d+cr_leg_w/2-cr_tab_w,0])
+  // lid tab / cross bar
+  translate([-tab_len,cft_d+cr_leg_w/2-cr_tab_w,0])
   hull(){
       cylinder(h=cr_lt,d=cr_leg_w);
       translate([0,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
-      translate([abs(tab_len)+cft_w+cr_latch_locx-cr_leg_w/2,0,0]) cylinder(h=cr_lt,d=cr_leg_w);
-      translate([abs(tab_len)+cft_w+cr_latch_locx-cr_leg_w/2,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
+      translate([tab_len+cft_w+cr_latch_locx-cr_leg_w/2,0,0]) cylinder(h=cr_lt,d=cr_leg_w);
+      translate([tab_len+cft_w+cr_latch_locx-cr_leg_w/2,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
   }
 
   // leg
@@ -459,7 +486,7 @@ else if(make=="MISE_Enclosure_2") { // show upside-down, inside, retainer closed
 else if(make=="MISE_Enclosure_3") { // show upside-down, inside, retainer open
   rotate([180,0,0]){
     top_cover();
-    rotate([0,2,13]) translate([4,-2.6,0.5]) translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cr_top]) retainer();
+    rotate([0,2,13]) translate([cr_latch_travel,0,0]) translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cr_top]) retainer();
     %bottom_cover();
   }
 }
@@ -468,8 +495,8 @@ else {
 //%pcb();
 //%reader();
 top_cover();
-//%bottom_cover();
-//rotate([0,2,13]) translate([4,-2.6,0.5])  // rotate retainer to un-latched position
+%bottom_cover();
+//translate([cr_latch_travel,0,0])  // move retainer to un-latched position
 translate ([px/2+cf_xc-cft_w/2,-f2w+cft_f2w,iw_h-cr_top])
   retainer();
 }
