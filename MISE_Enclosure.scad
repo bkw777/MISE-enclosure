@@ -35,7 +35,7 @@ nic_zt = 26.67;   // pcb Z top to nic Z top - NIC conector is the tallest top-si
 // front wall holes
 joy_h = 12.7;     // joystick height
 joy_w = 22.86;    // joystick width
-joy_xc = -29.337; // pcb center to js center
+joy_xc = -30; // pcb center to js center
                   // joystick bottom = pcb top
 joy_f = 5.1;      // pcb front edge to joystick front
 
@@ -80,7 +80,7 @@ assert(b2w>=nic_pcb_overhang,"b2w must be >= nic_pcb_overhang");
 screw_d = 3.5;  // screw diameter - #6 = 0.14" = 3.5
 screw_fhr = 4 ; // flat head radius
 spir = screw_d/2-0.1; // screw post inside radius
-spor = spir+3; // screw post outside radius
+spor = spir+2.5; // screw post outside radius
 
 // interior walls
 iw_x = l2w + px + r2w;
@@ -140,12 +140,15 @@ cr_lt = cr_top - cf_h;
 
 cr_tab_w = 10;
 cr_tab_wt = 3; // wall thickness around tab, all directions
-cr_tab_pocket_wall_thickness = spor*2;
+//cr_tab_pocket_wall_thickness = spor*2;
+cr_tab_pocket_wall_thickness = 6;
 cr_tab_locx = px/2+cf_xc-mi-cft_w/2; // centered on screw post
-cr_tab_pocket_wall_height = cr_top + cr_tab_wt;
+cr_tab_pocket_wall_height = cr_top + 3;
 cr_leg_w = 4;  // leg thickness
-cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2-cr_leg_w/2;
-//cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2;
+cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2; // for flush end, add "-cr_leg_w/2"
+p_wall_y1 = f2w + mi;  // pocket wall front
+p_wall_y2 = cft_f2w + cft_d + 5;  // pocket wall back
+cr_tab_pocket_wall_length = p_wall_y2 - p_wall_y1;
 
 // TODO - re-arrange this to be based off the edge of the reader pcb
 //        this dim is left over from the previous style with a foot tab that goes into a pocket
@@ -159,6 +162,11 @@ $fs = 0.4; // facet size
 
 
 ///////////////////////////////////////////////////
+
+module mirror_copy(vector){
+  children();
+  mirror(vector) children();
+}
 
 module walls() {
   difference() {
@@ -192,9 +200,9 @@ module walls() {
       translate([px+r2w-oc,py/2+bus_yc-bus_w/2,-pz-bch-wt-oc]) cube([oc+wt+oc,bus_w,bus_h+oc]); // bus opening
 
       // bar lid front receptical groove
-      translate([px/2+cf_xc+cft_otw/2+oc,-f2w+0.001,iw_h-cf_h])
+      translate([px/2+cf_xc+cft_otw/2+1,-f2w+0.001,iw_h-cf_h])
         rotate([180,90,0])
-          linear_extrude(oc+cft_otw+oc)
+          linear_extrude(1+cft_otw+1)
             polygon([
               [0,0],
               [cr_lt,0],
@@ -250,39 +258,58 @@ module posts() {
 }
 
 module cf_holder() {
-  p_wall_y1 = f2w+mi;
-  p_wall_y2 = cft_f2w+cft_d+cr_tab_wt;
-  cr_tab_pocket_wall_length = p_wall_y2 - p_wall_y1;
-
   translate([px/2+cf_xc,-f2w,iw_h+.001])
   rotate([0,180,0])
   difference(){
     group(){
+      // tunnel - really just two walls now
       translate([-cft_otw/2,0,0])
-        cube([cft_otw,cft_f2w,cf_h-0.1]); // tunnel
+        cube([cft_otw,cft_f2w,cf_h-0.1]);
+
+      // front lid guide
+      // strain-releif for the pocket wall while the retainer is being installed or removed
+      //mirror_copy([1,0,0])
+      translate([-joy_w/2,0,cf_h+cr_lt])
+        rotate([0,-90,0])
+          linear_extrude(3)
+            polygon([
+              [0,0],
+              //[0,2],
+              [4,6],
+              [6,6],
+              [6,0]
+            ]);
+      
+      // tray
       translate([-cft_ow/2,cft_f2w,0])
         cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
 
       // latch
-      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d-cr_tab_wt,0])
-        cube([cr_tab_wt+cr_leg_w+cr_tab_wt,cr_tab_wt*2,cr_tab_wt]);
-      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_tab_wt-0.001,0])
+      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d-cr_tab_w+cr_leg_w/2,0])
+        cube([cr_tab_wt+cr_leg_w+cr_tab_wt,cr_tab_w,cr_tab_wt]);
+      // ramp
+      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_leg_w/2-0.5,0])
         rotate([90,0,90])
           linear_extrude(cr_tab_wt+cr_leg_w+cr_tab_wt)
             polygon([
               [0,0],
               [0,cr_tab_wt],
-              [8,0]
+              [1,cr_tab_wt],
+              [10,0]
             ]);
 
       // bar pocket wall
-      translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2,p_wall_y1,0])
+      translate([cft_w/2+cr_tab_locx,p_wall_y1,0])
         difference(){
-          cube([cr_tab_pocket_wall_thickness,cr_tab_pocket_wall_length,cr_top+cr_tab_wt]);
-          translate([cr_tab_pocket_wall_thickness/2,0,0]) cylinder(h=cr_tab_pocket_wall_height+oc,r=spor-oc);
+          hull(){
+            translate([0,-3,0]) cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
+            translate([0,cr_tab_pocket_wall_length,0]) cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
+          }
+          cylinder(h=cr_tab_pocket_wall_height+oc,d=cr_tab_pocket_wall_thickness-oc);
         }
 
       // bar lid front receptical groove
+      // now recessed into the wall, so this is moved to module walls()
       //translate([-cft_otw/2,0,cf_h])
       //  cube([cft_otw,cft_f2w+2,cr_lt]);
       //translate([-cft_otw/2,0,cf_h])
@@ -307,13 +334,13 @@ module cf_holder() {
       // bar latch detent
       translate([-cft_w/2-cr_latch_locx+cr_leg_w/2,cft_f2w+cft_d-cr_leg_w/2,0])
         hull(){
-          cylinder(h=cr_tab_wt,d=0.2+cr_leg_w,cr_tab_wt+oc);
-          translate([0,-cr_tab_wt,0]) cylinder(h=cr_tab_wt,d=0.2+cr_leg_w,cr_tab_wt+oc);
+          cylinder(h=cr_tab_wt,d=0.6+cr_leg_w,cr_tab_wt+oc);
+          translate([0,-cr_tab_w,0]) cylinder(h=cr_tab_wt,d=0.6+cr_leg_w,cr_tab_wt+oc);
         }
 
       // bar pocket
-      translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2-oc,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.2])
-        cube([oc+cr_tab_pocket_wall_thickness+oc,0.2+cr_tab_w+2,0.2+cr_lt+0.2]);
+      translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2-oc,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.4])
+        cube([oc+cr_tab_pocket_wall_thickness+oc,0.2+cr_tab_w+2,0.4+cr_lt+0.4]);
     }
   }
 }
@@ -479,8 +506,8 @@ else {
 //%pcb();
 //%reader();
 top_cover();
-%bottom_cover();
+//%bottom_cover();
 //rotate([0,2,13]) translate([4,-2.6,0.5])  // rotate retainer to un-latched position
 translate ([px/2+cf_xc-cft_w/2,-f2w,iw_h-cr_top])
-  retainer();
+  %retainer();
 }
