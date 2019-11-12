@@ -109,8 +109,8 @@ p2t = 0.5; // any pcb edge pcb to any tunnel end
 joy_t = f2w-joy_f-p2t; // joystick tunnel length
 
 // CF reader
-cft_w = 47.2; // cf tray inside width
-cft_d = 27.2; // cf tray inside depth
+cft_w = 47.3; // cf tray inside width
+cft_d = 27.3; // cf tray inside depth
 
 // This controls how far the CF cards stick out of the front of the enclosure.
 // This can vary from 0 to almost 9 in theory. (at 9 you would need fingernails to get the CF cards out)
@@ -281,8 +281,19 @@ module cf_holder() {
             ]);
       
       // tray
-      translate([-cft_ow/2,cft_f2w,0])
-        cube([cft_ow,cft_d+cft_wt,cft_wh]); // tray
+      hull() {
+        translate([-cft_w/2+cft_wt,cft_f2w+cft_d+cft_wt/2,0]) cylinder(h=cft_wh,d=cft_wt);
+        translate([cft_w/2-cft_wt,cft_f2w+cft_d+cft_wt/2,0]) cylinder(h=cft_wh,d=cft_wt);
+      }
+      hull() {
+        translate([-cft_w/2-cft_wt/2,cft_f2w+cft_wt,0]) cylinder(h=cft_wh,d=cft_wt);
+        translate([-cft_w/2-cft_wt/2,cft_f2w+cft_d-cft_wt,0]) cylinder(h=cft_wh,d=cft_wt);
+      }
+      hull() {
+        translate([+cft_w/2+cft_wt/2,cft_f2w+cft_wt,0]) cylinder(h=cft_wh,d=cft_wt);
+        translate([+cft_w/2+cft_wt/2,cft_f2w+cft_d-cft_wt,0]) cylinder(h=cft_wh,d=cft_wt);
+      }
+      
 
       // latch
       translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d-cr_tab_w+cr_leg_w/2,0])
@@ -302,36 +313,23 @@ module cf_holder() {
       translate([cft_w/2+cr_tab_locx,p_wall_y1,0])
         difference(){
           hull(){
-            translate([0,-3,0]) cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
+            // this -3 is to strengthen the screw post against the force of the bar prising the pocket open
+            /*translate([0,-3,0])*/ cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
             translate([0,cr_tab_pocket_wall_length,0]) cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
           }
           cylinder(h=cr_tab_pocket_wall_height+oc,d=cr_tab_pocket_wall_thickness-oc);
         }
 
-      // bar lid front receptical groove
-      // now recessed into the wall, so this is moved to module walls()
-      //translate([-cft_otw/2,0,cf_h])
-      //  cube([cft_otw,cft_f2w+2,cr_lt]);
-      //translate([-cft_otw/2,0,cf_h])
-      //  cube([cft_otw,2,cr_lt]);
-
     }
     group(){
       translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+0.01]); // tunnel
       //translate([-cf_w/2,-oc,-oc]) cube([cf_w,oc+cft_f2w+oc,cf_h+oc]); // tunnel
-      translate([-cft_w/2,cft_f2w,-oc]) cube([cft_w,cft_d,oc+cft_wh+oc]); // tray
-
-      // knock out the corners of the tray for easier fitment and to compensate for printing
-      translate([cft_w/2-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+1.01,cft_wt+2,oc+cft_wh+oc]);
-      translate([-cft_w/2-cft_wt-1,cft_f2w+cft_d-1,-oc]) cube([cft_wt+2,cft_wt+2,oc+cft_wh+oc]);
-      translate([-cft_w/2-cft_wt-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
-      translate([cft_w/2-oc,cft_f2w-oc,-oc]) cube([oc+cft_wt+oc,1+oc,oc+cft_wh+oc]);
 
       // notch to clear some components on cf reader pcb
       translate([-cft_w/2-cft_wt-oc,cft_f2w+cft_d-cft_cnl-cft_cny,cft_cnh])
         cube([oc+cft_wt+oc,cft_cnl,cft_wh-cft_cnh+oc]);
 
-      // bar latch detent
+      // leg latch pocket
       translate([-cft_w/2-cr_latch_locx+cr_leg_w/2,cft_f2w+cft_d-cr_leg_w/2,0])
         hull(){
           cylinder(h=cr_tab_wt,d=0.6+cr_leg_w,cr_tab_wt+oc);
@@ -507,7 +505,7 @@ else {
 //%reader();
 top_cover();
 //%bottom_cover();
-rotate([0,2,13]) translate([4,-2.6,0.5])  // rotate retainer to un-latched position
-translate ([px/2+cf_xc-cft_w/2,-f2w,iw_h-cr_top])
-  %retainer();
+//rotate([0,2,13]) translate([4,-2.6,0.5])  // rotate retainer to un-latched position
+//translate ([px/2+cf_xc-cft_w/2,-f2w,iw_h-cr_top])
+//  %retainer();
 }
