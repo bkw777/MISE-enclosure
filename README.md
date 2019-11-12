@@ -12,17 +12,13 @@ http://bartlettlabs.com/M3SE/index.html
 The source design file is written in OpenSCAD  
 https://www.openscad.org/
 
-There are also FreeCAD files in the FreeCAD directory. These are the original design, but the files are difficult to edit without breaking the model.  
-http://www.freecadweb.org/
+There are also FreeCAD files in the "orig" directory. These are the original design kept for reference or in case anyone preferrs that design. The original files are difficult to edit without breaking the model because of the order in which I performed various operations while building up the models. The original design is also unnecessarily difficult to print.  
 
-The *.stl files are for 3d-printing.
-
-Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99  
-(scroll to the bottom for the most recent)
+Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
 
 ### Directions:
 
-#### 1 - 3D print the *.stl files
+#### 1 - print the 3 files
  top_cover.stl  
  bottom_cover.stl  
  retainer.stl  
@@ -38,7 +34,7 @@ Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99
  http://www.cablesonline.com/240pinidedir.html  
  Change “Available Lengths: 4 inches FI-004”
 
-* **4 flat-head #6 x 3/4" screws, any type**  
+* **4 flat-head #6 x 3/4" screws**  
  Home Depot:  
  https://www.homedepot.com/p/Everbilt-6-32-x-3-4-in-Phillips-Flat-Head-Stainless-Steel-Machine-Screw-6-Pack-814561/204274823
 
@@ -46,28 +42,29 @@ Pictures: https://goo.gl/photos/jDpvjbgjePCddrG99
  http://www.homedepot.com/p/Everbilt-1-2-in-Self-Adhesive-Vinyl-Surface-Bumpers-16-per-Pack-49967/203661150
 
 #### 3 - Assembly
-Unplug the cf reader from the MISE.  
-Remove the 4 nylon stand-offs from the screw holes on the MISE.  
-Plug the female end of the 40 pin extension cable into the MISE where the cf reader used to be.
+Unplug the CF reader from the mainboard & remove the CF card(s) from the reader.
 
-Lay the cf reader flat in the small tray formed into the corner of the top_cover, with the lights and jumpers up facing you. The white CF slot rails on the back side of the cf reader fits exactly into that tray.
+Remove the 4 nylon stand-offs from the screw holes on the mainboard.
 
-Install the retainer over top of the cf reader. (see pics)
+Plug the male end of the IDE extension cable onto the CF reader.
 
-Turn the top_cover around so the cf reader is to your right and close to you, and the round hole on the rear wall is away from you.  
-Hold the MISE upside down with the network jack away from you.  
-Angle the network jack down into the rear wall away from you. Rest the rear side of the MISE on the two rear screw posts, keep the front side of the MISE lifted up.  
-Connect the male end of the 40 pin extension cable onto the cf reader.  
-Lay the front edge of the MISE down, pay attention that the network jack pokes into the square hole in the rear wall as you swing the front edge down.
+Lay the CF reader flat in the small tray formed into the corner of the top_cover, with the lights and jumpers up facing you.  
+Install the retainer over top of the CF reader. (refer to pics)
 
-Press the 4 rubber feet onto the flat side of the base_plate, just inside of the screw holes (right next to each screw hole, towards the center of the plate rather than towards the outside edge).  
-Place the base_plate on top of the MISE, with the short risers down, touching the MISE (ie with the new feet up).  
-Make sure the screw holes line up. The screws are closer to the rear wall and further away from the front wall.  
-The base_plate should now be flush with the edge of the top_cover. 
+Orient the top cover so that the network, vga, & power side is away from you.  
+Set the mainboard standing up behind the 2 rear screw posts, network/vga/power side down.  
 
-Install the 4 screws. Don't over-tighten. 3d-printing is not super strong.
+Connect the free end of the IDE extension cable to the IDE plug on the mainboard.
 
-DONE!
+Lift the mainboard up from behind the 2 rear screw posts, tip forward toward yourself, and lay the mainboard flat atop all 4 screw posts.
+
+Place the bottom cover on top of the mainboard, with the 4 short risers pointing down.
+
+Install the 4 screws.
+
+### Painting
+A very close off-the-shelf match to the RCA "Mercedes Silver" TRS-80 paint is
+[Dupli-Color Bumper Coating FB108 Medium Silver](http://www.amazon.com/Dupli-Color-FB108-Medium-Flexible-Coating/dp/B00296DXN4).
 
 ## Author / License
 
