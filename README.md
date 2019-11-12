@@ -52,9 +52,7 @@ Plug the female end of the 40 pin extension cable into the MISE where the cf rea
 
 Lay the cf reader flat in the small tray formed into the corner of the top_cover, with the lights and jumpers up facing you. The white CF slot rails on the back side of the cf reader fits exactly into that tray.
 
-Looking down into the top_cover with the cf reader in the top-right corner, insert the offset foot end of the retainer clip into the slot to the right of the cf reader.  
-Swing the retainer clip down over the cf reader, and back towards you, enough to slide the left side of the retainer into the slot to the left of the cf reader, attached to the screw post.  
-Push the retainer clip forward until it snaps firmly in place.
+Install the retainer over top of the cf reader. (see pics)
 
 Turn the top_cover around so the cf reader is to your right and close to you, and the round hole on the rear wall is away from you.  
 Hold the MISE upside down with the network jack away from you.  
@@ -75,4 +73,4 @@ DONE!
 
 These files are licenced under the GPL.  
 http://www.gnu.org/licenses/gpl-3.0.en.html  
-Brian K. White - bw.aljex@gmail.com - 20160423
+Brian K. White - b.kenyon.w@gmail.com - 20191112
