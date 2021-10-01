@@ -332,8 +332,8 @@ module cf_holder() {
       // leg latch pocket
       translate([-cft_w/2-cr_latch_locx+cr_leg_w/2,cft_f2w+cft_d-cr_leg_w/2,0])
         hull(){
-          cylinder(h=cr_tab_wt,d=0.6+cr_leg_w,cr_tab_wt+oc);
-          translate([0,-cr_tab_w,0]) cylinder(h=cr_tab_wt,d=0.6+cr_leg_w,cr_tab_wt+oc);
+          cylinder(h=cr_tab_wt+oc,d=0.6+cr_leg_w);
+          translate([0,-cr_tab_w,0]) cylinder(h=cr_tab_wt+oc,d=0.6+cr_leg_w);
         }
 
       // bar pocket
