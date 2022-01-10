@@ -1,19 +1,21 @@
 # Generate STL and STEP mesh output files from OpenSCAD source
 # Brian K. White - b.kenyon.w@gmail.com
 
-model = MISE_Enclosure
-parts = top_cover bottom_cover retainer
+model = MISE_M3SE_enclosure
+parts = top_cover bottom_cover small_parts
+version != awk '(/^\/\/ version: /) {print $$3}' $(model).scad
+#version = 2.2
 
 openscad = openscad-nightly
 
 .PHONY: all
-all: $(parts) $(model)_1.png $(model)_2.png $(model)_3.png
+all: $(parts) display_1.png display_2.png display_3.png
 
 .PHONY: $(parts)
-$(parts): %: %.stl %.png
+$(parts): %: %_$(version).stl %.png
 
 # Generate .stl for 3d printing
-%.stl: $(model).scad
+%_$(version).stl: $(model).scad
 	$(openscad) -D'make="$(*)"' --render -o $(@) $(model).scad
 
 # Generate .png for README.md
@@ -31,4 +33,4 @@ help list:
 
 .PHONY: clean
 clean:
-	rm -f {$(parts)}.stl *.png
+	rm -f *.stl *.png

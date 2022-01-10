@@ -1,0 +1,2 @@
+// treat *.stl as compiled output - put in release assets instead
+*.stl
