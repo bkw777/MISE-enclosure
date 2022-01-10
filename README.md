@@ -2,9 +2,9 @@
 http://bartlettlabs.com/MISE/index.html  
 http://bartlettlabs.com/M3SE/index.html
 
-![](MISE_Enclosure_1.png)
-![](MISE_Enclosure_2.png)
-![](MISE_Enclosure_3.png)
+![](display_1.png)
+![](display_2.png)
+![](display_3.png)
 ![](top_cover.png)
 ![](bottom_cover.png)
 ![](small_parts.png)
