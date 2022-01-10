@@ -12,16 +12,14 @@ http://bartlettlabs.com/M3SE/index.html
 The source design file is written in OpenSCAD  
 https://www.openscad.org/
 
-There are also FreeCAD files in the "orig" directory. These are the original design kept for reference or in case anyone preferrs that design. The original files are difficult to edit without breaking the model because of the order in which I performed various operations while building up the models. The original design is also unnecessarily difficult to print.  
-
 Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
 
 ### Directions:
 
 #### 1 - print the 3 files
- top_cover.stl  
- bottom_cover.stl  
- retainer.stl  
+ top_cover_\<version\>.stl  
+ bottom_cover_\<version\>.stl  
+ small_parts_\<version\>.stl
 
 #### 2 - Aquire the following parts
 
@@ -35,6 +33,7 @@ Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
  Change “Available Lengths: 4 inches FI-004”
 
 * **4 flat-head #6 x 3/4" screws**  
+ (Optional: There are 3d-printed "nails" in small_parts_\*.stl which can be used in place of screws)  
  Home Depot:  
  https://www.homedepot.com/p/Everbilt-6-32-x-3-4-in-Phillips-Flat-Head-Stainless-Steel-Machine-Screw-6-Pack-814561/204274823
 
@@ -68,6 +67,5 @@ A very close off-the-shelf match to the RCA "Mercedes Silver" TRS-80 paint is
 
 ## Author / License
 
-These files are licenced under the GPL.  
-http://www.gnu.org/licenses/gpl-3.0.en.html  
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.  
 Brian K. White - b.kenyon.w@gmail.com - 20191112
