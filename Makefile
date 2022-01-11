@@ -4,7 +4,6 @@
 model = MISE_M3SE_enclosure
 parts = top_cover bottom_cover small_parts
 version != awk '(/^\/\/ version: /) {print $$3}' $(model).scad
-#version = 2.2
 
 openscad = openscad-nightly
 
@@ -12,10 +11,10 @@ openscad = openscad-nightly
 all: $(parts) display_1.png display_2.png display_3.png
 
 .PHONY: $(parts)
-$(parts): %: %_$(version).stl %.png
+$(parts): %: $(model)_%_$(version).stl %.png
 
 # Generate .stl for 3d printing
-%_$(version).stl: $(model).scad
+$(model)_%_$(version).stl: $(model).scad
 	$(openscad) -D'make="$(*)"' --render -o $(@) $(model).scad
 
 # Generate .png for README.md
