@@ -9,10 +9,12 @@ http://bartlettlabs.com/M3SE/index.html
 ![](bottom_cover.png)
 ![](small_parts.png)
 
-The source design file is written in OpenSCAD  
-https://www.openscad.org/
 
 Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
+
+STL files for 3d-printing are in [releases](../../releases/latest)
+
+Buy a print from [CraftCloud](https://craftcloud3d.com/offer/89f95bc3-b7b2-4779-af22-bbe57bcafa7d)
 
 ### Directions:
 
@@ -20,6 +22,10 @@ Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
  top_cover_\<version\>.stl  
  bottom_cover_\<version\>.stl  
  small_parts_\<version\>.stl
+ 
+ PLA, 20% infill, 3 walls is fine.
+
+ Or buy a print from [CraftCloud](https://craftcloud3d.com/offer/f326aa39-0bd5-4f7d-a8ab-a3166577bb0f)
 
 #### 2 - Aquire the following parts
 
@@ -69,3 +75,5 @@ A very close off-the-shelf match to the RCA "Mercedes Silver" TRS-80 paint is
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.  
 Brian K. White - b.kenyon.w@gmail.com
+
+Designed with [OpenSCAD](https://www.openscad.org/)
