@@ -37,7 +37,7 @@ STL files for 3d-printing are in [releases](../../releases/latest)
  Change “Available Lengths: 4 inches FI-004”
 
 * **4 flat-head #6 x 3/4" screws**  
- (Optional: There are 3d-printed "nails" in small_parts_\*.stl which can be used in place of screws)  
+ (These screws are optional: There are printed "nails" included in the small_parts stl which can be used in place of screws)  
  Home Depot:  
  https://www.homedepot.com/p/Everbilt-6-32-x-3-4-in-Phillips-Flat-Head-Stainless-Steel-Machine-Screw-6-Pack-814561/204274823
 
