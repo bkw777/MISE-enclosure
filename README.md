@@ -14,8 +14,6 @@ Pictures: https://photos.app.goo.gl/1NdcbL9hprvxRTdB7
 
 STL files for 3d-printing are in [releases](../../releases/latest)
 
-Buy a print from [CraftCloud](https://craftcloud3d.com/offer/89f95bc3-b7b2-4779-af22-bbe57bcafa7d)
-
 ### Directions:
 
 #### 1 - print the 3 files
