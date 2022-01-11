@@ -17,9 +17,9 @@ STL files for 3d-printing are in [releases](../../releases/latest)
 ### Directions:
 
 #### 1 - print the 3 files
- top_cover_\<version\>.stl  
- bottom_cover_\<version\>.stl  
- small_parts_\<version\>.stl
+ MISE_M3SE_top_cover_\<version\>.stl  
+ MISE_M3SE_bottom_cover_\<version\>.stl  
+ MISE_M3SE_small_parts_\<version\>.stl
  
  PLA, 20% infill, 3 walls is fine.
 
