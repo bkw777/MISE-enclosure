@@ -99,7 +99,9 @@ screw_post_chamfer = 0.75;
 
 // printable flat nail that can be used in place of screw
 nail_length = 20 + pcb_thickness + bch; // nail shaft length, not counting the head
-// produces a square cross-section nail body with the diagonal the same as the screw post ID
+// This equation produces a square cross-section nail body with the diagonal exactly the same as the diameter of the ID of the screw post.
+// but FDM holes shrink from the nominal dimensions, so this is an interference fit,
+// but, only at the corners, and only at the full-width top of the taper
 nail_full_width = spir*2 * sqrt(2)/2;
 nail_tip_width = nail_full_width * 0.75;
 // how far the full-width non-tapered part of the nail shank inserts into the screw post
@@ -427,19 +429,25 @@ module retainer () {
   union(){  // add
 
   // lid main
-  translate([(cft_w-cft_otw)/2,fc/2,0]) cube([cft_otw,cft_f2w+cft_d-cr_tab_w-fc/2+o,cr_lt]);
+  translate([(cft_w-cft_otw)/2,fc,0])
+   cube([cft_otw,cft_f2w+cft_d-cr_tab_w-fc/2+o,cr_lt]);
+
+  // lid to rear bar fillets
   lfr = cr_leg_w/2; // local fillet radius
-  translate([cft_w/2,0,0]) mirror_copy([1,0,0]) translate([-cft_w/2-lfr+(cft_w-cft_otw)/2+o,-lfr+cft_f2w+cft_d-cr_tab_w+o,0]) fillet_linear(l=cr_lt,r=lfr);
+  translate([cft_w/2,0,0])
+   mirror_copy([1,0,0])
+    translate([-cft_w/2-lfr+(cft_w-cft_otw)/2+o,-lfr+cft_f2w+cft_d-cr_tab_w+o,0])
+     fillet_linear(l=cr_lt,r=lfr);
 
   // lid front edge
-  translate([(cft_w-cft_otw)/2,0.1+0.001,0])
+  translate([(cft_w-cft_otw)/2,fc+0.001,0])
     rotate([0,-90,180])
-      linear_extrude(cft_otw)
-        polygon([
-          [0,0],
-          [cr_lt,0],
-          [cr_lt/2,cr_lt/3]
-        ]);
+     linear_extrude(cft_otw)
+      polygon([
+        [0,0],
+        [cr_lt,0],
+        [cr_lt/2,cr_lt/3]
+       ]);
 
   // lid tab
   translate([-cr_tab_len,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
