@@ -4,6 +4,7 @@
 model = MISE_M3SE_enclosure
 parts = top_cover bottom_cover small_parts
 version != awk '(/^\/\/ version: /) {print $$3}' $(model).scad
+sources = $(model).scad handy.scad
 
 openscad = openscad-nightly
 
@@ -14,11 +15,11 @@ all: $(parts) display_1.png display_2.png display_3.png
 $(parts): %: $(model)_%_$(version).stl %.png
 
 # Generate .stl for 3d printing
-$(model)_%_$(version).stl: $(model).scad
-	$(openscad) -D'make="$(*)"' --render -o $(@) $(model).scad
+$(model)_%_$(version).stl: $(sources)
+	$(openscad) -D'make="$(*)"' -o $(@) --export-format binstl $(model).scad
 
 # Generate .png for README.md
-%.png: $(model).scad
+%.png: $(sources)
 	$(openscad) -D'make="$(*)"' --colorscheme DeepOcean --imgsize 1024,768 --viewall -o $(@) $(model).scad
 
 .PHONY: help list
