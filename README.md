@@ -25,7 +25,7 @@ STL files for 3d-printing are in [releases](../../releases/latest)
  
  PLA, 20% infill, 3 walls is fine.
 
- Or buy a print from [CraftCloud](https://craftcloud3d.com/offer/985b52e2-56a9-4e49-adee-a4461f4ac762)
+ Or buy a print from [CraftCloud](https://craftcloud3d.com/offer/31996590-3f27-4966-b4cb-ee6a8467b6cb)
 
 #### 2 - Aquire the following parts
 
