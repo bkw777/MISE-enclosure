@@ -2,6 +2,8 @@
 http://bartlettlabs.com/MISE/index.html  
 http://bartlettlabs.com/M3SE/index.html
 
+[![Alt text for your video](https://img.youtube.com/vi/Me62yHelnyM/0.jpg)](https://youtu.be/Me62yHelnyM)
+
 ![](display_1.png)
 ![](display_2.png)
 ![](display_3.png)
