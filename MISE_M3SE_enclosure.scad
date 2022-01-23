@@ -1,6 +1,6 @@
 // M1SE/M3SE Enclosure - Top Cover
 // b.kenyon.w@gmail.com
-// version: 2.2.004
+// version: 2.2.005
 
 // Which version to generate, M1SE or M3SE
 // The only difference is the width of the slot for the bus cable.
@@ -11,7 +11,7 @@ variant = "M3SE";
 // Normally Makefile sets this.
 // "none", "top_cover", "bottom_cover", "retainer", "nail", "small_parts"
 // "display_1", "display_2", "display_3", "display_nail"
-make = "top_cover";
+make = "display_2";
 
 $fs = 0.25;
 $fa = 1;
@@ -98,12 +98,22 @@ screw_post_fillet = 2.5;
 screw_post_chamfer = 0.75;
 
 // printable flat nail that can be used in place of screw
-nail_length = 20 + pcb_thickness + bch; // nail shaft length, not counting the head
-// square within a circle: side = diameter * sqrt(2)/2
-nail_full_width = (spir*2 * sqrt(2)/2)*1.05;
-nail_tip_width = nail_full_width * 0.75;
+// nail length not counting head
+nail_length = 20 + pcb_thickness + bch;
+
+// square nail cross-section diagonal width, percent of screw post ID
+// 0 = corners of nail body exactly the same is screw hole ID
+// -n = diagonal x% smaller than hole
+// +n = diagonal x% larger than hole
+nail_interference_fit_percent = 10;
+
 // how far the full-width non-tapered part of the nail shank inserts into the screw post
+// 0 = nail is only full width in the PCB and bottom cover
+//     tapers from 75% to full width over the remaining length
 nail_grip_depth = 0;
+
+nail_full_width = sq_in_circle(spir*2) * (100+nail_interference_fit_percent)/100;
+nail_tip_width = nail_full_width * 0.75;
 
 // interior walls
 iw_x = l2w + px + r2w;
@@ -166,7 +176,7 @@ cr_tab_pocket_wall_thickness = 5; // spor*2;
 cr_tab_locx = px/2+cf_xc-mi-cft_w/2; // centered on screw post
 cr_tab_pocket_wall_height = cr_top + 3;
 cr_leg_w = 4;  // leg thickness
-cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2-cr_leg_w/2; // for flush end, add "-cr_leg_w/2"
+cr_tab_len = cr_tab_locx + cr_tab_pocket_wall_thickness/2-cr_leg_w/2-fc; // for flush end, add "-cr_leg_w/2"
 p_wall_y1 = f2w + mi;  // pocket wall front
 p_wall_y2 = cft_f2w + cft_d + 5;  // pocket wall back
 cr_tab_pocket_wall_length = p_wall_y2 - p_wall_y1;
@@ -181,12 +191,17 @@ include <handy.scad>;
 
 ///////////////////////////////////////////////////
 
+function sq_in_circle(d) = d * sqrt(2)/2;
+
 module walls() {
   difference() {
     union() { // add
       // exterior walls
-      if(cr<=0) translate([-l2w-wt,-f2w-wt,-pz-bch-wt]) cube([ew_x,ew_y,ew_z]); // square corners
-      else hull() {                                                             // round corners
+      if(cr<=0)
+       translate([-l2w-wt,-f2w-wt,-pz-bch-wt])
+        cube([ew_x,ew_y,ew_z]); // square corners
+      else
+       hull() { // round corners
         translate([-l2w+cr,-f2w+cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
         translate([px+r2w-cr,-f2w+cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
         translate([-l2w+cr,py+b2w-cr,-pz-bch-wt]) cylinder(ew_z,cr+wt,cr+wt);
@@ -284,15 +299,24 @@ module cf_holder() {
       // tray
       // rear wall
       translate([0,cft_f2w+cft_d+cft_wt/2+fc*2,0]) {
-        hull() mirror_copy([1,0,0]) translate([cft_w/2-cft_wt,0,0]) cylinder(h=cft_wh,d=cft_wt);
-        translate([-cft_w/2+cft_wt,cft_wh+cft_wt/2-o,cft_wh]) rotate([-90,0,-90]) fillet_linear(l=cft_w-cft_wt*2,r=cft_wh);
+        hull() mirror_copy([1,0,0])
+         translate([cft_w/2-cft_wt,0,0])
+          cylinder(h=cft_wh,d=cft_wt);
+        translate([-cft_w/2+cft_wt,cft_wh+cft_wt/2-o,cft_wh])
+         rotate([-90,0,-90])
+          fillet_linear(l=cft_w-cft_wt*2,r=cft_wh);
       }
 
       // side walls
-      translate([0,cft_f2w+cft_d/2,0]) mirror_copy([1,0,0]) translate([-cft_w/2-cft_wt/2-fc,0,0]) hull() mirror_copy([0,1,0]) translate([0,cft_d/2-cft_wt,0]) cylinder(h=cft_wh,d=cft_wt);
+      translate([0,cft_f2w+cft_d/2,0])
+       mirror_copy([1,0,0])
+        translate([-cft_w/2-cft_wt/2-fc,0,0])
+         hull() mirror_copy([0,1,0])
+          translate([0,cft_d/2-cft_wt,0])
+           cylinder(h=cft_wh,d=cft_wt);
 
       // latch / ramp
-      translate([-cft_w/2-cr_latch_locx-cr_tab_wt,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
+      translate([-cft_w/2-cr_latch_locx-cr_tab_wt+fc,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
         rotate([90,0,90])
           linear_extrude(cr_tab_wt+cr_leg_w+cr_tab_wt)
             polygon([
@@ -304,11 +328,12 @@ module cf_holder() {
 
       // bar pocket wall
       translate([cft_w/2+cr_tab_locx,p_wall_y1,0])
-        difference(){
-          union() {
+        difference(){ // bar pocket wall diff
+          union() { // diff add
            hull(){
             cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
-            translate([0,cr_tab_pocket_wall_length,0]) cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
+            translate([0,cr_tab_pocket_wall_length,0])
+             cylinder(h=cr_tab_pocket_wall_height,d=cr_tab_pocket_wall_thickness);
            }
            // top fillet
            difference(){
@@ -316,11 +341,16 @@ module cf_holder() {
            translate([0,0,cr_tab_pocket_wall_height+f-o]) rotate([0,180,180]) fillet_polar(R=-spor-o,r=f,A=180);
            mirror_copy([1,0,0]) translate([cr_tab_pocket_wall_thickness/2,-o,cr_tab_pocket_wall_height-o-o]) cube([cr_tab_pocket_wall_thickness/2+f+o,o+spor+f+o,o+f+o]);
            }
-          }
-          translate([0,0,-o]) cylinder(h=o+cr_tab_pocket_wall_height+o,d=o+spir*2+o);
-        }
+           
+          } // diff add
+          
+          // clear away around the screw hole
+          translate([0,0,-o]) // diff remove
+           cylinder(h=o+cr_tab_pocket_wall_height+o,d=o+spir*2+o);
+        } // diff
 
     } // cf_holder diff add
+
     union(){ // cf_holder diff remove
       translate([-cf_w/2,-o,-o])
        cube([cf_w,o+cft_f2w+o,o+cf_h+o]); // tunnel
@@ -330,7 +360,7 @@ module cf_holder() {
         cube([o+cft_wt+o,cft_cnl,cft_wh-cft_cnh+o]);
 
       // leg latch pocket
-      translate([-cft_w/2-cr_latch_locx+cr_leg_w/2,cft_f2w+cft_d-cr_leg_w/2,-o])
+      translate([-cft_w/2-cr_latch_locx+cr_leg_w/2+fc,cft_f2w+cft_d-cr_leg_w/2,-o])
         hull(){
           cylinder(h=o+cr_tab_wt+o,d=cr_leg_w+fc);
           translate([0,-cr_tab_w,0]) cylinder(h=cr_tab_wt+o,d=cr_leg_w+fc);
@@ -339,7 +369,7 @@ module cf_holder() {
       // bar pocket
       translate([cft_w/2+cr_tab_locx-cr_tab_pocket_wall_thickness/2-o,cft_f2w+cft_d-(cr_tab_w+2),cr_top-cr_lt-0.4])
         cube([o+cr_tab_pocket_wall_thickness+o,0.2+cr_tab_w+2,0.4+cr_lt+0.4]);
-    }
+    } // cf_holder diff remove
   }
 }
 
@@ -424,21 +454,23 @@ module bottom_cover () {
 
 module retainer () {
   difference(){
+   lfr = cr_leg_w/2; // local fillet radius
+   ffc = fc*2; // front edge fitment clearance
+
    union(){  // add
 
    // lid main
-   translate([(cft_w-cft_otw)/2+fc,fc,0])
-    cube([cft_otw,cft_f2w+cft_d-cr_tab_w-fc/2+o,cr_lt]);
+   translate([(cft_w-cft_otw)/2+fc,ffc,0])
+    cube([cft_otw,cft_f2w+cft_d-cr_tab_w-ffc+o,cr_lt]);
 
    // lid to rear bar fillets
-   lfr = cr_leg_w/2; // local fillet radius
    translate([cft_w/2+fc,0,0])
     mirror_copy([1,0,0])
      translate([-cft_w/2-lfr+(cft_w-cft_otw)/2+o,-lfr+cft_f2w+cft_d-cr_tab_w+o,0])
       fillet_linear(l=cr_lt,r=lfr);
 
    // lid front edge
-   translate([(cft_w-cft_otw)/2+fc,fc+0.001,0])
+   translate([(cft_w-cft_otw)/2+fc,ffc+0.001,0])
     rotate([0,-90,180])
      linear_extrude(cft_otw)
       polygon([
@@ -448,22 +480,34 @@ module retainer () {
        ]);
 
    // lid tab
-   translate([-cr_tab_len,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
+   translate([-cr_tab_len-lfr,cft_f2w+cft_d+cr_leg_w/2-cr_tab_w,0])
     hull(){
      cylinder(h=cr_lt,d=cr_leg_w);
-     translate([0,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
-     translate([cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,0,0]) cylinder(h=cr_lt,d=cr_leg_w);
-     translate([cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_lt,d=cr_leg_w);
+     translate([0,cr_tab_w-cr_leg_w,0])
+      cylinder(h=cr_lt,d=cr_leg_w);
+     translate([lfr+cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,0,0])
+      cylinder(h=cr_lt,d=cr_leg_w);
+     translate([lfr+cr_tab_len+cft_w+cr_latch_locx-cr_leg_w/2+cr_latch_handle,cr_tab_w-cr_leg_w,0])
+      cylinder(h=cr_lt,d=cr_leg_w);
     }
 
    // leg
    translate([cft_w+cr_latch_locx-cr_leg_w/2,cft_f2w+cft_d-cr_tab_w+cr_leg_w/2,o]) {
     hull(){
      cylinder(h=cr_top-fc-o,d=cr_leg_w);
-     translate([0,cr_tab_w-cr_leg_w,0]) cylinder(h=cr_top-fc-o,d=cr_leg_w);
+     translate([0,cr_tab_w-cr_leg_w,0])
+      cylinder(h=cr_top-fc-o,d=cr_leg_w);
     }
-    translate([0,0,fr+cr_lt-o-o]) mirror_copy([1,0,0]) translate([fr+cr_leg_w/2-o,0,0]) rotate([0,90,90]) fillet_linear(r=fr,l=cr_tab_w-cr_leg_w);
-    translate([0,cr_tab_w/2-cr_leg_w/2,0]) mirror_copy([0,1,0]) mirror_copy([1,0,0]) translate([fr,-cr_tab_w/2+cr_leg_w/2+o,fr+cr_lt-o-o]) rotate([0,180,0]) fillet_polar(r=fr,R=-cr_leg_w/2+fr);
+    translate([0,0,fr+cr_lt-o-o])
+     mirror_copy([1,0,0])
+      translate([fr+cr_leg_w/2-o,0,0])
+       rotate([0,90,90])
+        fillet_linear(r=fr,l=cr_tab_w-cr_leg_w);
+    translate([0,cr_tab_w/2-cr_leg_w/2,0])
+     mirror_copy([0,1,0])
+      mirror_copy([1,0,0])
+       translate([fr,-cr_tab_w/2+cr_leg_w/2+o,fr+cr_lt-o-o])
+        rotate([0,180,0]) fillet_polar(r=fr,R=-cr_leg_w/2+fr);
    }
 
    } // union add
@@ -472,12 +516,14 @@ module retainer () {
     // JP2 clearance
     translate([52.5-1,cft_f2w+24.5-1,0.8]) cube([1+6+1,1+2+1+1,6.5]);
     // front edge corner chamfer to compensate for fdm printing corners excess extrusion
-    translate([cft_otw/2+fc,-cr_lt*1.38,-o])
+    //lfr = cr_lt/3;
+    translate([cft_otw/2+fc,fc+lfr-cr_lt/3,-o])
      mirror_copy([1,0,0])
-      translate([cft_otw/2+o,0,0])
-       rotate([0,0,45])
-        cube(o+cr_lt+o);
-   } // union remove
+      translate([cft_otw/2-lfr+o,0,0])
+       rotate([0,0,-90])
+        fillet_linear(l=o+cr_lt+o,r=o+lfr+o);
+
+        } // union remove
 } // difference
 } // retainer
 
